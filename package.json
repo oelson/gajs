@@ -21,6 +21,7 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
+    "fast-diff": "^1.2.0",
     "lodash": "^4.17.19",
     "random": "^2.2.0"
   }

@@ -3,7 +3,8 @@ from difflib import ndiff
 from itertools import zip_longest, chain
 */
 
-import { sortBy } from "lodash";
+const { sortBy } = require("lodash");
+const diff = require("fast-diff");
 
 function truncate(population, fitness, survival_percentile) {
   competition = sortBy(population, [fitness]);
@@ -11,14 +12,31 @@ function truncate(population, fitness, survival_percentile) {
   return competition.slice(0, threshold);
 }
 
-/**Compte le nombre de lettres différentes entre deux textes de mêmes tailles.*/
+/**
+ * Compte le nombre de lettres différentes entre deux textes de mêmes tailles.
+ */
 function letter_distance(a, b) {
-  //return sum(1 for la, lb in zip(a, b) if la != lb)
+  let sum = 0;
+  for (let i = 0; i < a.length; i++) {
+    const lA = a[i];
+    const lB = b[i];
+    if (lA !== lB) sum++;
+  }
+  return sum;
 }
 
-/**Compte le nombre de lettres différentes entre deux textes qui peuvent être de tailles différentes.*/
+/**
+ * Compte le nombre de lettres différentes entre deux textes qui peuvent être de tailles différentes.
+ */
 function letter_distance_diff(a, b) {
-  //return sum(1 for charinfo in ndiff(a, b) if not charinfo.startswith(' '))
+  const differences = diff(a, b);
+  let sum = 0;
+  for (const [type, part] of differences) {
+    if (type === diff.INSERT || type === diff.DELETE) {
+      sum += part.length;
+    }
+  }
+  return sum;
 }
 
 /**Compte le nombre de bits différents entre deux entiers qui peuvent être de tailles différentes. Approximatif.*/
@@ -41,3 +59,5 @@ function bytearray_distance(g1, g2) {
 function bytearray_bit_distance(g1, g2) {
   // return sum(bit_distance(b1, b2) if b1 is not None and b2 is not None else 8 for b1, b2 in zip_longest(g1, g2))
 }
+
+module.exports = { letter_distance, letter_distance_diff };
