@@ -39,14 +39,19 @@ function letter_distance_diff(a, b) {
   return sum;
 }
 
-/**Compte le nombre de bits différents entre deux entiers qui peuvent être de tailles différentes. Approximatif.*/
-function bit_distance(a, b) {
-  /*
-    x = a ^ b
-    number_of_ones = sum((x >> shift) & 1 for shift in range(0, x.bit_length() + 1))
-    length_difference = abs(a.bit_length() - b.bit_length())
-    return number_of_ones + length_difference
-    */
+/**
+ * Compte le nombre de bits différents entre deux entiers.
+ */
+function bit_distance(a, b, sizeOfInt) {
+  let sum = 0;
+  for (let i = 0; i < sizeOfInt; i++) {
+    const nthBitA = (a >> i) & 1;
+    const nthBitB = (b >> i) & 1;
+    if (nthBitA !== nthBitB) {
+      sum++;
+    }
+  }
+  return sum;
 }
 
 /** Compte le nombre d'octets différents entre deux vecteurs qui peuvent être de tailles différentes. */
@@ -60,4 +65,4 @@ function bytearray_bit_distance(g1, g2) {
   // return sum(bit_distance(b1, b2) if b1 is not None and b2 is not None else 8 for b1, b2 in zip_longest(g1, g2))
 }
 
-module.exports = { letter_distance, letter_distance_diff };
+module.exports = { letter_distance, letter_distance_diff, bit_distance };
