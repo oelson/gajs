@@ -1,10 +1,24 @@
-import { generate } from "./population";
-import { truncate } from "./selection";
+const { sortBy } = require("lodash");
+
+function truncate(population, fitness, survival_percentile) {
+  competition = sortBy(population, [fitness]);
+  threshold = parseInt(population.length * survival_percentile);
+  return competition.slice(0, threshold);
+}
+
+function* generate(initial_population, lifecycle, stop) {
+  let rank = 1;
+  let population = initial_population;
+  do {
+    yield [rank, population];
+    rank, (population = rank + 1), lifecycle(population);
+  } while (!stop(rank, population));
+}
 
 Array.range = (start, end) =>
   Array.from({ length: end - start }, (v, k) => k + start);
 
-export class Simulation {
+class Simulation {
   constructor(
     survival_percentile,
     fitness,
@@ -74,3 +88,5 @@ export class Simulation {
     return rank, generation;
   }
 }
+
+module.exports = { Simulation };

@@ -1,18 +1,17 @@
-function intToBase(int, base, length) {
+function integer_to_base(int, base, length) {
   const coerced = int >>> 0; // https://stackoverflow.com/a/16155417/2950046
   const binary = coerced.toString(base);
   const padded = binary.padStart(length, "0");
-  const lengthDiff = padded.length - length;
-  const sized = padded.substring(lengthDiff);
+  const sized = padded.substring(0, length);
   return sized;
 }
 
 function binary_string(bytes) {
-  return bytes.map((b) => intToBase(b, 2, 8)).join("");
+  return bytes.map((b) => integer_to_base(b, 2, 8)).join("");
 }
 
 function byte_string(bytes) {
-  return bytes.map((b) => intToBase(b, 16, 2)).join("");
+  return bytes.map((b) => integer_to_base(b, 16, 2)).join("");
 }
 
 module.exports = { binary_string, byte_string };

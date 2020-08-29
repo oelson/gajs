@@ -1,68 +1,50 @@
-/*
-from difflib import ndiff
-from itertools import zip_longest, chain
-*/
+const { diffChars, diffArrays } = require("diff");
 
-const { sortBy } = require("lodash");
-const diff = require("fast-diff");
-
-function truncate(population, fitness, survival_percentile) {
-  competition = sortBy(population, [fitness]);
-  threshold = parseInt(population.length * survival_percentile);
-  return competition.slice(0, threshold);
-}
-
-/**
- * Compte le nombre de lettres différentes entre deux textes de mêmes tailles.
- */
-function letter_distance(a, b) {
+function str_distance(a, b) {
+  const differences = diffChars(a, b);
   let sum = 0;
-  for (let i = 0; i < a.length; i++) {
-    const lA = a[i];
-    const lB = b[i];
-    if (lA !== lB) sum++;
-  }
-  return sum;
-}
-
-/**
- * Compte le nombre de lettres différentes entre deux textes qui peuvent être de tailles différentes.
- */
-function letter_distance_diff(a, b) {
-  const differences = diff(a, b);
-  let sum = 0;
-  for (const [type, part] of differences) {
-    if (type === diff.INSERT || type === diff.DELETE) {
-      sum += part.length;
+  for (const { count, added, removed } of differences) {
+    if (added === true || removed === true) {
+      sum += count;
     }
   }
   return sum;
 }
 
-/**
- * Compte le nombre de bits différents entre deux entiers.
- */
-function bit_distance(a, b, sizeOfInt) {
+function vector_distance(a, b) {
+  const differences = diffArrays(a, b);
   let sum = 0;
-  for (let i = 0; i < sizeOfInt; i++) {
-    const nthBitA = (a >> i) & 1;
-    const nthBitB = (b >> i) & 1;
-    if (nthBitA !== nthBitB) {
-      sum++;
+  for (const { count, added, removed } of differences) {
+    if (added === true || removed === true) {
+      sum += count;
     }
   }
   return sum;
 }
 
-/** Compte le nombre d'octets différents entre deux vecteurs qui peuvent être de tailles différentes. */
-function bytearray_distance(g1, g2) {
-  // return sum(1 for b1, b2 in zip_longest(g1, g2) if b1 != b2)
+function integer_binary_distance(a, b) {
+  const aStr = a.toString(2),
+    bStr = b.toString(2);
+  return distance(aStr, bStr);
 }
 
-/**Compte le nombre de bits différents entre deux vecteurs qui peuvent être de tailles différentes.*/
-
-function bytearray_bit_distance(g1, g2) {
-  // return sum(bit_distance(b1, b2) if b1 is not None and b2 is not None else 8 for b1, b2 in zip_longest(g1, g2))
+function byte_vector_distance(a, b) {
+  const aStr = integer_vector_to_binary(a, 8);
+  const bStr = integer_vector_to_binary(b, 8);
+  return distance(aStr, bStr);
 }
 
-module.exports = { letter_distance, letter_distance_diff, bit_distance };
+function integer_vector_to_binary(vector, binary_length) {
+  return vector
+    .map((i) =>
+      i.toString(2).padStart(binary_length, "0").substring(0, binary_length)
+    )
+    .join("");
+}
+
+module.exports = {
+  str_distance,
+  vector_distance,
+  integer_binary_distance,
+  byte_vector_distance,
+};
