@@ -34,14 +34,13 @@ function byte_vector_distance(a, b) {
   return str_distance(aStr, bStr);
 }
 
-function integer_vector_to_binary(vector, binary_length) {
-  const binary_vector = vector.map(function (i) {
-    const binary = i.toString(2);
-    const binaryPadded = binary.padStart(binary_length, "0");
-    const binarySized = binaryPadded.substring(0, binary_length);
-    return binarySized;
+function integer_vector_to_binary(vector, binaryLength) {
+  const binary_vector = vector.map(function (int) {
+    const binary = int.toString(2);
+    const padded = binary.padStart(binaryLength, "0");
+    const truncated = padded.substring(0, binaryLength);
+    return truncated;
   });
-  // On dirait que le type Uint8Array effectue une re-conversion du tableau sortant de .map et traffic les valeurs "001010111"
   return binary_vector.join("");
 }
 

@@ -16,7 +16,7 @@ Given("a second byte vector {string}", function (vector) {
   this.vectorB = parseByteVector(vector);
 });
 
-When("I measure the distance between the two vectors", function () {
+When("I measure the distance between the two byte vectors", function () {
   this.distance = byte_vector_distance(this.vectorA, this.vectorB);
 });
 
