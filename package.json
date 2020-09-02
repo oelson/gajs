@@ -4,7 +4,7 @@
   "description": "Genetic Algorithm, Darwin Down",
   "private": true,
   "scripts": {
-    "test": "cucumber-js"
+    "test": "cucumber-js --language fr"
   },
   "repository": {
     "type": "git",

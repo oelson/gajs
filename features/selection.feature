@@ -1,22 +1,23 @@
-Feature: Measure of distance between two byte vectors
-    Two byte vectors should be comparable in the number of bytes in which they differ.
-    A measure of zero means equality.
-    Additions, changes and removals should be accounted properly.
+Fonctionnalité: Mesure de la distance entre deux vecteurs d'octets
+    Deux vecteurs d'octets sont comparable par le nombre de bits dont ils diffèrent.
+    Une mesure de zéro signifie l'égalité.
+    Les ajouts, les changements et les suppressions sont correctement comptées.
+    Les vecteurs de taille différentes sont supportés.
 
-Scenario: Comparison of two same vectors
-    Given a first byte vector "1,2,3"
-    And a second byte vector "1,2,3"
-    When I measure the distance between the two byte vectors
-    Then the distance should be 0
+Scénario: Comparaison de deux vecteurs indentiques
+    Soit un premier vecteur d'octets "1,2,3"
+    Et un second vecteur d'octets "1,2,3"
+    Quand je mesure la distance entre ces deux vecteurs d'octets
+    Alors la distance est de 0
 
-Scenario: Comparison of two vectors of same length that differ in one byte
-    Given a first byte vector "1,2,3"
-    And a second byte vector "1,5,3"
-    When I measure the distance between the two byte vectors
-    Then the distance should be 2
+Scénario: Comparison of two vectors of same length that differ in one byte
+    Soit un premier vecteur d'octets "1,2,3"
+    Et un second vecteur d'octets "1,5,3"
+    Quand je mesure la distance entre ces deux vecteurs d'octets
+    Alors la distance est de 2
 
-Scenario: Comparison of two vectors of same length with one replacement and two additions
-    Given a first byte vector "1,2,3"
-    And a second byte vector "1,5,3,7,8"
-    When I measure the distance between the two byte vectors
-    Then the distance should be 16
+Scénario: Comparison of two vectors of same length with one replacement and two additions
+    Soit un premier vecteur d'octets "1,2,3"
+    Et un second vecteur d'octets "1,5,3,7,8"
+    Quand je mesure la distance entre ces deux vecteurs d'octets
+    Alors la distance est de 16

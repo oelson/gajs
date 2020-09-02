@@ -8,18 +8,18 @@ function parseByteVector(string) {
   return string.split(",").map((x) => parseInt(x));
 }
 
-Given("a first byte vector {string}", function (vector) {
+Given("un premier vecteur d'octets {string}", function (vector) {
   this.vectorA = parseByteVector(vector);
 });
 
-Given("a second byte vector {string}", function (vector) {
+Given("un second vecteur d'octets {string}", function (vector) {
   this.vectorB = parseByteVector(vector);
 });
 
-When("I measure the distance between the two byte vectors", function () {
+When("je mesure la distance entre ces deux vecteurs d'octets", function () {
   this.distance = byte_vector_distance(this.vectorA, this.vectorB);
 });
 
-Then("the distance should be {int}", function (int) {
-  assert.equal(int, this.distance);
+Then("la distance est de {int}", function (distance) {
+  assert.equal(distance, this.distance);
 });
