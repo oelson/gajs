@@ -22,4 +22,4 @@ function flip_random_bit_in_random_byte(bytes) {
   flip_random_bit_in_bytes(bytes, n);
 }
 
-module.exports = { flip_random_bit_in_random_byte };
+module.exports = { flip_bit_in_byte, flip_random_bit_in_random_byte };

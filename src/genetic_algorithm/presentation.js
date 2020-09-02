@@ -14,4 +14,4 @@ function byte_string(bytes) {
   return bytes.map((b) => integer_to_base(b, 16, 2)).join("");
 }
 
-module.exports = { binary_string, byte_string };
+module.exports = { integer_to_base, binary_string, byte_string };

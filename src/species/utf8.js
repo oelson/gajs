@@ -106,7 +106,7 @@ class Utf8Target {
   fitness_by_phenotype(being) {
     return str_distance(being.phenotype, this.target.phenotype);
   }
-  random_being(this) {
+  random_being() {
     const genome = random_genome(this.target.genotype.length);
     return new Utf8Being(genome);
   }
@@ -125,4 +125,4 @@ function randint(min, max) {
   return parseInt(Math.round(Math.random() * (max - min) + min));
 }
 
-module.exports = { TextBeing, TextTarget };
+module.exports = { Utf8Being, Utf8Target };

@@ -1,6 +1,6 @@
 class Being {
   constructor(genotype, phenotype) {
-    this.initial_genotype = bytes(genotype);
+    this.initial_genotype = genotype.slice();
     this.genotype = genotype;
     this.phenotype = phenotype;
   }

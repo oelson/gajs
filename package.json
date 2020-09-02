@@ -4,7 +4,7 @@
   "description": "Genetic Algorithm, Darwin Down",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cucumber-js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/oelson/ga#readme",
   "devDependencies": {
+    "cucumber": "^6.0.5",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.12"
   },
