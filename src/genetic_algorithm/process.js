@@ -9,14 +9,12 @@ function truncate(population, fitness, survival_percentile) {
 function* generate(initial_population, lifecycle, stop) {
   let rank = 1;
   let population = initial_population;
-  do {
+  while (!stop(rank, population)) {
     yield [rank, population];
-    rank, (population = rank + 1), lifecycle(population);
-  } while (!stop(rank, population));
+    rank++;
+    population = lifecycle(population);
+  }
 }
-
-Array.range = (start, end) =>
-  Array.from({ length: end - start }, (v, k) => k + start);
 
 class Simulation {
   constructor(
@@ -89,4 +87,4 @@ class Simulation {
   }
 }
 
-module.exports = { Simulation };
+module.exports = { generate, Simulation };
