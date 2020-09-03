@@ -1,23 +1,34 @@
 Fonctionnalité: Mesure de la distance entre deux vecteurs d'octets
     Deux vecteurs d'octets sont comparable par le nombre de bits dont ils diffèrent.
-    Une mesure de zéro signifie l'égalité.
     Les ajouts, les changements et les suppressions sont correctement comptées.
     Les vecteurs de taille différentes sont supportés.
 
-Scénario: Comparaison de deux vecteurs indentiques
+Scénario: Une mesure de zéro signifie l'égalité des vecteurs
     Soit un premier vecteur d'octets "1,2,3"
     Et un second vecteur d'octets "1,2,3"
     Quand je mesure la distance entre ces deux vecteurs d'octets
-    Alors la distance est de 0
+    Alors la distance est de 0 bit
 
-Scénario: Comparison of two vectors of same length that differ in one byte
+Scénario: La comparaison de deux vecteurs différents d'un octet et de deux bits
     Soit un premier vecteur d'octets "1,2,3"
     Et un second vecteur d'octets "1,5,3"
     Quand je mesure la distance entre ces deux vecteurs d'octets
-    Alors la distance est de 2
+    Alors la distance est de 2 bits
 
-Scénario: Comparison of two vectors of same length with one replacement and two additions
+Scénario: L'ajout d'un octet est compté comme 8 bits'
     Soit un premier vecteur d'octets "1,2,3"
-    Et un second vecteur d'octets "1,5,3,7,8"
+    Et un second vecteur d'octets "1,2,3,4"
     Quand je mesure la distance entre ces deux vecteurs d'octets
-    Alors la distance est de 16
+    Alors la distance est de 8 bits
+
+Scénario: La suppression d'un octet est comptée comme huit bits
+    Soit un premier vecteur d'octets "1,2,3"
+    Et un second vecteur d'octets "1,3"
+    Quand je mesure la distance entre ces deux vecteurs d'octets
+    Alors la distance est de 8 bits
+
+Scénario: Les remplacements comptent comme ajout et suppression
+    Soit un premier vecteur d'octets "3,0,4"
+    Et un second vecteur d'octets "3,1,4"
+    Quand je mesure la distance entre ces deux vecteurs d'octets
+    Alors la distance est de 2 bits

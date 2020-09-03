@@ -20,6 +20,6 @@ When("je mesure la distance entre ces deux vecteurs d'octets", function () {
   this.distance = byte_vector_distance(this.vectorA, this.vectorB);
 });
 
-Then("la distance est de {int}", function (distance) {
+Then("la distance est de {int} bit(s)", function (distance) {
   assert.equal(distance, this.distance);
 });
