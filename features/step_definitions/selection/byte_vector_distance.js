@@ -2,7 +2,7 @@ const { Given, When, Then } = require("cucumber");
 const assert = require("assert");
 const {
   byte_vector_distance,
-} = require("../../src/genetic_algorithm/selection");
+} = require("../../../src/genetic_algorithm/selection");
 
 function parseByteVector(string) {
   return string.split(",").map((x) => parseInt(x));
