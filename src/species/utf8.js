@@ -125,4 +125,4 @@ function randint(min, max) {
   return parseInt(Math.round(Math.random() * (max - min) + min));
 }
 
-module.exports = { Utf8Being, Utf8Target };
+module.exports = { Utf8Being, Utf8Target, encode_utf8, decode_utf8 };
