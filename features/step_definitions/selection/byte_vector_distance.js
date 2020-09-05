@@ -3,17 +3,14 @@ const assert = require("assert");
 const {
   byte_vector_distance,
 } = require("../../../src/genetic_algorithm/selection");
+const { dataTableToUInt8Array } = require("../tool");
 
-function parseByteVector(string) {
-  return string.split(",").map((x) => parseInt(x));
-}
-
-Given("un premier vecteur d'octets {string}", function (vector) {
-  this.vectorA = parseByteVector(vector);
+Given("un premier vecteur UInt8", function (dataTable) {
+  this.vectorA = dataTableToUInt8Array(dataTable);
 });
 
-Given("un second vecteur d'octets {string}", function (vector) {
-  this.vectorB = parseByteVector(vector);
+Given("un second vecteur UInt8", function (dataTable) {
+  this.vectorB = dataTableToUInt8Array(dataTable);
 });
 
 When("je mesure la distance entre ces deux vecteurs d'octets", function () {
