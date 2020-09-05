@@ -20,14 +20,14 @@ class Simulation {
   constructor(
     survival_percentile,
     fitness,
-    initial_being,
+    initiate_being,
     initial_population_size,
     hazard,
     maximum_rank
   ) {
     this.survival_percentile = survival_percentile;
-    this.fertility_rate = int(1 / survival_percentile);
-    this.initial_being = initial_being;
+    this.fertility_rate = parseInt(1 / survival_percentile);
+    this.initiate_being = initiate_being;
     this.initial_population_size = initial_population_size;
     this.maximum_rank = maximum_rank;
     this.fitness_function = fitness;
@@ -73,7 +73,7 @@ class Simulation {
   generations() {
     const initial_population = [];
     for (let i = 0; i < this.initial_population_size; ++i) {
-      const being = this.initial_being();
+      const being = this.initiate_being();
       initial_population.push(being);
     }
     return generate(initial_population, this.lifecycle, this.stop);

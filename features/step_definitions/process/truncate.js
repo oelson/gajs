@@ -1,8 +1,7 @@
 const { Given, When, Then } = require("cucumber");
 const assert = require("assert");
 const { truncate } = require("../../../src/genetic_algorithm/process");
-const { encode_utf8, Utf8Being } = require("../../../src/species/utf8");
-const { find, intersection } = require("lodash");
+const { find } = require("lodash");
 
 function voyelleNess(text) {
   if (text === "") return 0;
