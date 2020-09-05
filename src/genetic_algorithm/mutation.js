@@ -1,4 +1,5 @@
 const random = require("random");
+const { select } = require("weighted");
 
 function flip_bit_in_byte(byte, bit_index) {
   const mask = 1 << bit_index;
@@ -32,10 +33,38 @@ function replace_random_letter(text, alphabet) {
   return replace_letter(text, replacement_index, alphabet, alphabet_index);
 }
 
+function nothing(_) {
+  return _;
+}
+
+class Hazard {
+  constructor(mutations, weights, maximum) {
+    this.mutations = mutations;
+    this.weights = weights;
+    this.maximum = maximum;
+  }
+
+  mutate(genotype) {
+    for (const mutation of this.pick()) {
+      mutation(genotype);
+    }
+    return genotype;
+  }
+
+  *pick() {
+    const times = random.int(1, this.maximum);
+    for (let i = 1; i <= times; i++) {
+      yield select(this.mutations, this.weights);
+    }
+  }
+}
+
 module.exports = {
   flip_bit_in_byte,
   flip_bit_in_bytes,
   flip_random_bit_in_random_byte,
   replace_letter,
   replace_random_letter,
+  nothing,
+  Hazard,
 };

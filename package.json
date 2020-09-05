@@ -24,6 +24,7 @@
   "dependencies": {
     "diff": "^4.0.2",
     "lodash": "^4.17.19",
-    "random": "^2.2.0"
+    "random": "^2.2.0",
+    "weighted": "^0.3.0"
   }
 }
