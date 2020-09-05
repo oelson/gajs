@@ -4,7 +4,6 @@ const {
   str_distance,
 } = require("../../../src/genetic_algorithm/selection");
 
-
 Given("un premier texte {string}", function (string) {
   this.strA = string;
 });
