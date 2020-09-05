@@ -1,8 +1,8 @@
 const { sortBy } = require("lodash");
 
 function truncate(population, fitness, survival_percentile) {
-  competition = sortBy(population, [fitness]);
-  threshold = parseInt(population.length * survival_percentile);
+  const competition = sortBy(population, [fitness]);
+  const threshold = parseInt(population.length * survival_percentile);
   return competition.slice(0, threshold);
 }
 
@@ -87,4 +87,4 @@ class Simulation {
   }
 }
 
-module.exports = { generate, Simulation };
+module.exports = { generate, truncate, Simulation };
