@@ -48,11 +48,10 @@ class Hazard {
     this.maximum = maximum;
   }
 
-  mutate(data) {
+  mutate(being) {
     for (const mutate of this.pick()) {
-      mutate(data);
+      mutate(being);
     }
-    return data;
   }
 
   *pick() {

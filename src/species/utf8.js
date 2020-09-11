@@ -2,7 +2,7 @@ const {
   str_distance,
   byte_vector_distance,
 } = require("../genetic_algorithm/selection");
-const { Being } = require("../genetic_algorithm/being");
+const random = require("random");
 
 function encode_utf8(s) {
   let i = 0,
@@ -82,16 +82,13 @@ function decode_utf8(bytes) {
   return s;
 }
 
-class Utf8Being extends Being {
+class Utf8Being {
   constructor(genotype) {
     const phenotype = decode_utf8(genotype); // TODO python "replace" equivalent
-    super(genotype, phenotype);
-  }
-  reproduce(population) {
-    // reproduce by cloning
-    const genome_copy = this.genotype.slice();
-    const clone = new Utf8Being(genome_copy);
-    return clone;
+
+    this.initial_genotype = genotype.slice();
+    this.genotype = genotype;
+    this.phenotype = phenotype;
   }
 }
 
@@ -100,29 +97,44 @@ class Utf8Target {
     const genome = encode_utf8(text); // TODO python "replace" equivalent
     this.target = new Utf8Being(genome);
   }
+
   fitness_by_genotype(being) {
     return byte_vector_distance(being.genotype, this.target.genotype);
   }
+
   fitness_by_phenotype(being) {
     return str_distance(being.phenotype, this.target.phenotype);
   }
-  random_being() {
+
+  random_being_from_alphabet(alphabet) {
+    const phenotype = random_text(this.target.phenotype.length, alphabet);
+    const genotype = encode_utf8(phenotype);
+    return new Utf8Being(genotype);
+  }
+
+  random_being_from_bytes() {
     const genome = random_genome(this.target.genotype.length);
     return new Utf8Being(genome);
   }
 }
 
-function random_genome(size) {
+function random_genome(length) {
   const genome = [];
-  for (let i = 0; i < size; ++i) {
-    const random_byte = randint(0x00, 0xff);
+  for (let i = 0; i < length; ++i) {
+    const random_byte = random.int(0x00, 0xff);
     genome.push(random_byte);
   }
   return genome;
 }
 
-function randint(min, max) {
-  return parseInt(Math.round(Math.random() * (max - min) + min));
+function random_text(length, alphabet) {
+  let chars = [];
+  for (var i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * alphabet.length);
+    const randomChar = alphabet.charAt(randomIndex);
+    chars.push(randomChar);
+  }
+  return chars.join("");
 }
 
 module.exports = { Utf8Being, Utf8Target, encode_utf8, decode_utf8 };
