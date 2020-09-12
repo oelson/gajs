@@ -1,5 +1,6 @@
 const { stdout } = require("process");
 const { byte_string } = require("./genetic_algorithm/presentation");
+const { target_fitness, maximum_rank } = require("./genetic_algorithm/stop");
 const { Utf8Being, Utf8Target } = require("./species/utf8");
 const {
   Hazard,
@@ -31,14 +32,6 @@ function mutate(being) {
   h.mutate(being);
 }
 
-function maximum_rank_exceeded({ rank }) {
-  return rank > 1000;
-}
-
-function target_fitness_reached({ population }) {
-  return population.some((b) => fitness(b) === 0);
-}
-
 const t = new Utf8Target("le cadavre exquis boira le vin nouveau");
 
 const h = new Hazard([mutate_letters], [1], 1);
@@ -55,9 +48,8 @@ const g = generate({
   mutate,
   fitness,
   survival_percentile: 1 / 2,
-  stop_conditions: [maximum_rank_exceeded, target_fitness_reached],
+  stop_conditions: [maximum_rank(1000), target_fitness(0, fitness)],
 });
-
 
 for (const [r, p] of g) {
   const best = p[0];
