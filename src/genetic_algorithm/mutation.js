@@ -33,10 +33,6 @@ function replace_random_letter(text, alphabet) {
   return replace_letter(text, replacement_index, alphabet, alphabet_index);
 }
 
-function replace_random_letter_latin(text) {
-  return replace_random_letter(text, "abcdefghijklmnopqrstuvwxyz");
-}
-
 function nothing(_) {
   return _;
 }
@@ -68,7 +64,6 @@ module.exports = {
   flip_random_bit_in_random_byte,
   replace_letter,
   replace_random_letter,
-  replace_random_letter_latin,
   nothing,
   Hazard,
 };
