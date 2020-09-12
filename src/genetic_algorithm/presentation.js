@@ -10,8 +10,21 @@ function binary_string(bytes) {
   return bytes.map((b) => integer_to_base(b, 2, 8)).join("");
 }
 
-function byte_string(bytes) {
-  return bytes.map((b) => integer_to_base(b, 16, 2)).join("");
+// https://stackoverflow.com/questions/34309988/byte-array-to-hex-string-conversion-in-javascript
+function byte_string(byteArray) {
+  const chars = new Uint8Array(byteArray.length * 2);
+  const alpha = "a".charCodeAt(0) - 10;
+  const digit = "0".charCodeAt(0);
+
+  let p = 0;
+  for (let i = 0; i < byteArray.length; i++) {
+    let nibble = byteArray[i] >>> 4;
+    chars[p++] = nibble > 9 ? nibble + alpha : nibble + digit;
+    nibble = byteArray[i] & 0xf;
+    chars[p++] = nibble > 9 ? nibble + alpha : nibble + digit;
+  }
+
+  return String.fromCharCode.apply(null, chars);
 }
 
 module.exports = { integer_to_base, binary_string, byte_string };

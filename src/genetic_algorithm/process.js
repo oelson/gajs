@@ -6,14 +6,12 @@ function* generate({
   mutate,
   fitness,
   survival_percentile,
-  maximum_rank,
-  target_fitness,
+  stop_conditions,
 }) {
   let rank = 1;
   while (
-    rank < maximum_rank &&
     population.length > 0 &&
-    !population.some((b) => fitness(b) === target_fitness)
+    !stop_conditions.some((f) => f({ rank, population }))
   ) {
     yield [rank, population];
     rank++;

@@ -1,3 +1,5 @@
+const { stdout } = require("process");
+const { byte_string } = require("./genetic_algorithm/presentation");
 const { Utf8Being, Utf8Target } = require("./species/utf8");
 const {
   Hazard,
@@ -14,11 +16,27 @@ function mutate_letters(being) {
   being.phenotype = replace_random_letter_latin(being.phenotype);
 }
 
-function* reproduce_utf8_being(being) {
+function* reproduce(being) {
   for (let i = 0; i < 2; i++) {
     const genome_copy = being.genotype.slice();
     yield new Utf8Being(genome_copy);
   }
+}
+
+function fitness(being) {
+  return t.fitness_by_phenotype(being);
+}
+
+function mutate(being) {
+  h.mutate(being);
+}
+
+function maximum_rank_exceeded({ rank }) {
+  return rank > 1000;
+}
+
+function target_fitness_reached({ population }) {
+  return population.some((b) => fitness(b) === 0);
 }
 
 const t = new Utf8Target("le cadavre exquis boira le vin nouveau");
@@ -33,14 +51,22 @@ for (let i = 0; i < 30; i++) {
 
 const g = generate({
   population: I,
-  reproduce: reproduce_utf8_being,
-  mutate: b => h.mutate(b),
-  fitness: b => t.fitness_by_phenotype(b),
+  reproduce,
+  mutate,
+  fitness,
   survival_percentile: 1 / 2,
-  maximum_rank: 1000,
-  target_fitness: 0,
+  stop_conditions: [maximum_rank_exceeded, target_fitness_reached],
 });
 
+
 for (const [r, p] of g) {
-  console.log(r, g);
+  const best = p[0];
+  const worst = p[p.length - 1];
+  const best_fitness = fitness(best);
+  const worst_fitness = fitness(worst);
+  stdout.write(
+    `\r[${r}] fitness:${best_fitness}-${worst_fitness} "${
+      best.phenotype
+    }" (${byte_string(best.genotype)})`
+  );
 }
