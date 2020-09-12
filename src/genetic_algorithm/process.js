@@ -13,33 +13,22 @@ function* generate({
     population.length > 0 &&
     !stop_conditions.some((f) => f({ rank, population }))
   ) {
-    yield [rank, population];
-    rank++;
+    yield [rank++, population];
 
-    const all_lives = Array.from(life(population, mutate, reproduce));
-    population = death(all_lives, fitness, survival_percentile);
+    // hazard: mutate each being
+    for (const being of population) {
+      mutate(being);
+    }
+    // life: new beings by reproduction
+    // do not put previous beings in descendants (lifetime of 1) in order to keep the population stable
+    const descendants = population
+      .map((being) => reproduce(being, population))
+      .reduce((_population, offspring) => _population.concat(offspring), []);
+    // death: kill less-adapted beings
+    const competition = sortBy(descendants, [fitness]);
+    const threshold = parseInt(descendants.length * survival_percentile);
+    population = competition.slice(0, threshold);
   }
 }
 
-function* life(population, mutate, reproduce) {
-  for (const being of population) {
-    mutate(being);
-    yield* reproduce(being, population);
-  }
-}
-
-function death(population, fitness, survival_percentile) {
-  // TODO arr.sort(fonctionComparaison)
-  const competition = sortBy(population, [fitness]);
-  const threshold = parseInt(population.length * survival_percentile);
-  return competition.slice(0, threshold);
-}
-
-function last_generation(generations) {
-  let rank, generation;
-  for ([rank, generation] of generations) {
-  }
-  return rank, generation;
-}
-
-module.exports = { generate, last_generation };
+module.exports = { generate };

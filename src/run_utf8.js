@@ -17,11 +17,13 @@ function mutate_letters(being) {
   being.phenotype = replace_random_letter_latin(being.phenotype);
 }
 
-function* reproduce(being) {
+function reproduce(being) {
+  const offspring = [];
   for (let i = 0; i < 2; i++) {
     const genome_copy = being.genotype.slice();
-    yield new Utf8Being(genome_copy);
+    offspring.push(new Utf8Being(genome_copy));
   }
+  return offspring;
 }
 
 function fitness(being) {
@@ -48,7 +50,7 @@ const g = generate({
   mutate,
   fitness,
   survival_percentile: 1 / 2,
-  stop_conditions: [maximum_rank(1000), target_fitness(0, fitness)],
+  stop_conditions: [maximum_rank(100), target_fitness(0, fitness)],
 });
 
 for (const [r, p] of g) {
@@ -57,8 +59,9 @@ for (const [r, p] of g) {
   const best_fitness = fitness(best);
   const worst_fitness = fitness(worst);
   stdout.write(
-    `\r[${r}] fitness:${best_fitness}-${worst_fitness} "${
+    `\r[${r}] s:${p.length} f:${best_fitness}-${worst_fitness} b:"${
       best.phenotype
     }" (${byte_string(best.genotype)})`
   );
 }
+stdout.write("\n");
