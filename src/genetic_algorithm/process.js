@@ -25,11 +25,11 @@ function* generate({
   }
 }
 
-function select_by_threshold(fitness, survival_percentile) {
+function select_by_threshold(survival_probability, survival_percentile) {
   return function (population) {
-    const competition = sortBy(population, [fitness]);
-    const threshold = parseInt(population.length * survival_percentile);
-    return competition.slice(0, threshold);
+    const competition = sortBy(population, [survival_probability]);
+    const threshold = parseInt(population.length * (1 - survival_percentile));
+    return competition.slice(threshold);
   };
 }
 
@@ -41,4 +41,9 @@ function stop_at_target_fitness(target, fitness) {
   return ({ population }) => population.some((b) => fitness(b) === target);
 }
 
-module.exports = { generate, select_by_threshold, stop_at_maximum_rank, stop_at_target_fitness };
+module.exports = {
+  generate,
+  select_by_threshold,
+  stop_at_maximum_rank,
+  stop_at_target_fitness,
+};

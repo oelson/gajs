@@ -32,6 +32,11 @@ function fitness(being) {
   return levenshtein(being.phenotype, t.target.phenotype);
 }
 
+function survival_probability(being) {
+  const score = fitness(being);
+  return 1 - score / target_string.length;
+}
+
 function mutate(population) {
   for (const being of population) {
     h.mutate(being);
@@ -62,7 +67,7 @@ const generations = generate({
   population: random_population(100),
   mutate,
   reproduce,
-  select: select_by_threshold(fitness, survival_percentile),
+  select: select_by_threshold(survival_probability, survival_percentile),
   success_conditions: [stop_at_target_fitness(0, fitness)],
   fail_conditions: [stop_at_maximum_rank(1000)],
 });

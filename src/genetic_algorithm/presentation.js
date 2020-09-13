@@ -27,10 +27,9 @@ function byte_string(byteArray) {
   return String.fromCharCode.apply(null, chars);
 }
 
-
 function summarize_generation(rank, population, fitness) {
-  const best = population[0];
-  const worst = population[population.length - 1];
+  const best = population[population.length - 1];
+  const worst = population[0];
   const best_fitness = fitness(best);
   const worst_fitness = fitness(worst);
   return `[${rank}] s:${
@@ -40,4 +39,9 @@ function summarize_generation(rank, population, fitness) {
   )})`;
 }
 
-module.exports = { integer_to_base, binary_string, byte_string, summarize_generation };
+module.exports = {
+  integer_to_base,
+  binary_string,
+  byte_string,
+  summarize_generation,
+};
