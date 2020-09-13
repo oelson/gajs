@@ -19,24 +19,6 @@ function flip_random_bit_in_random_byte(bytes) {
   flip_bit_in_bytes(bytes, byte_index, bit_index);
 }
 
-function replace_letter(text, replacement_index, alphabet, alphabet_index) {
-  const letters = text.split("");
-  const new_letter = alphabet[alphabet_index];
-  letters[replacement_index] = new_letter;
-  const new_text = letters.join("");
-  return new_text;
-}
-
-function replace_random_letter(text, alphabet) {
-  const replacement_index = random.int(0, text.length - 1);
-  const alphabet_index = random.int(0, alphabet.length - 1);
-  return replace_letter(text, replacement_index, alphabet, alphabet_index);
-}
-
-function nothing(_) {
-  return _;
-}
-
 class Hazard {
   constructor(mutations, weights, maximum) {
     this.mutations = mutations;
@@ -62,8 +44,5 @@ module.exports = {
   flip_bit_in_byte,
   flip_bit_in_bytes,
   flip_random_bit_in_random_byte,
-  replace_letter,
-  replace_random_letter,
-  nothing,
   Hazard,
 };

@@ -4,6 +4,7 @@ const {
 } = require("../genetic_algorithm/selection");
 const random = require("random");
 const { StringDecoder } = require("string_decoder");
+const levenshtein = require("js-levenshtein");
 
 const Utf8Decoder = new StringDecoder("utf8");
 
@@ -42,6 +43,20 @@ function encode_utf8(s) {
   return bytes.subarray(0, i);
 }
 
+function replace_letter(text, replacement_index, alphabet, alphabet_index) {
+  const letters = text.split("");
+  const new_letter = alphabet[alphabet_index];
+  letters[replacement_index] = new_letter;
+  const new_text = letters.join("");
+  return new_text;
+}
+
+function replace_random_letter(text, alphabet) {
+  const replacement_index = random.int(0, text.length - 1);
+  const alphabet_index = random.int(0, alphabet.length - 1);
+  return replace_letter(text, replacement_index, alphabet, alphabet_index);
+}
+
 class Utf8Being {
   constructor(genotype) {
     const buffer = Buffer.from(genotype);
@@ -54,21 +69,22 @@ class Utf8Being {
 }
 
 class Utf8Target {
-  constructor(text) {
+  constructor(text, alphabet) {
     const genome = encode_utf8(text); // TODO python "replace" equivalent
     this.target = new Utf8Being(genome);
+    this.alphabet = alphabet;
   }
-
+  
   fitness_by_genotype(being) {
     return byte_vector_distance(being.genotype, this.target.genotype);
   }
 
   fitness_by_phenotype(being) {
-    return str_distance(being.phenotype, this.target.phenotype);
+    return levenshtein(being.phenotype, this.target.phenotype);
   }
 
-  random_being_from_alphabet(alphabet) {
-    const phenotype = random_text(this.target.phenotype.length, alphabet);
+  random_being_from_alphabet() {
+    const phenotype = random_text(this.target.phenotype.length, this.alphabet);
     const genotype = encode_utf8(phenotype);
     return new Utf8Being(genotype);
   }
@@ -98,4 +114,4 @@ function random_text(length, alphabet) {
   return chars.join("");
 }
 
-module.exports = { Utf8Being, Utf8Target, encode_utf8 };
+module.exports = { Utf8Being, Utf8Target, encode_utf8, replace_random_letter };
