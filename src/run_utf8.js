@@ -8,7 +8,10 @@ const {
   encode_utf8,
   replace_random_letter,
 } = require("./species/utf8");
-const { Hazard } = require("./genetic_algorithm/mutation");
+const {
+  Hazard,
+  flip_random_bit_in_random_byte,
+} = require("./genetic_algorithm/mutation");
 const {
   generate,
   select_by_threshold,
@@ -22,12 +25,22 @@ const alphabet = "abcdefghijklmnopqrstuvwxyz ";
 const target_string = "cadavre exquis";
 const target = new Utf8Target(target_string, alphabet);
 const fitness = target.fitness_by_phenotype.bind(target);
-const hazard = new Hazard([mutate_letters, (_) => _], [3 / 10, 7 / 10], 3);
+const hazard = new Hazard(
+  [
+    [mutate_letters, 0.7],
+    [(_) => _, 0.3],
+  ],
+  3
+);
 
 function mutate_letters(being) {
   const new_phenotype = replace_random_letter(being.phenotype, alphabet);
   const new_genome = encode_utf8(new_phenotype);
   being.genotype = new_genome;
+}
+
+function mutate_bytes(being) {
+  flip_random_bit_in_random_byte(being.genotype);
 }
 
 function survival_probability(being) {

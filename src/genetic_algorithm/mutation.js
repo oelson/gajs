@@ -20,9 +20,13 @@ function flip_random_bit_in_random_byte(bytes) {
 }
 
 class Hazard {
-  constructor(mutations, weights, maximum) {
-    this.mutations = mutations;
-    this.weights = weights;
+  constructor(mutation_weight_pairs, maximum) {
+    this.mutations = [];
+    this.weights = [];
+    for (const [mutation, weight] of mutation_weight_pairs) {
+      this.mutations.push(mutation);
+      this.weights.push(weight);
+    }
     this.maximum = maximum;
   }
 
