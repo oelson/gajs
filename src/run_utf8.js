@@ -9,6 +9,7 @@ const {
 } = require("./genetic_algorithm/mutation");
 const {
   generate,
+  select_by_threshold,
   stop_at_target_fitness,
   stop_at_maximum_rank,
 } = require("./genetic_algorithm/process");
@@ -19,12 +20,22 @@ const survival_percentile = 1 / reproduction_rate;
 const alphabet = "abcdefghijklmnopqrstuvwxyz ";
 const target_string = "cadavre exquis";
 const t = new Utf8Target(target_string);
-const h = new Hazard([mutate_letters, (_) => _], [4 / 10, 6 / 10], 2);
+const h = new Hazard([mutate_letters, (_) => _], [3 / 10, 7 / 10], 3);
 
 function mutate_letters(being) {
   const new_phenotype = replace_random_letter(being.phenotype, alphabet);
   const new_genome = encode_utf8(new_phenotype);
   being.genotype = new_genome;
+}
+
+function fitness(being) {
+  return levenshtein(being.phenotype, t.target.phenotype);
+}
+
+function mutate(population) {
+  for (const being of population) {
+    h.mutate(being);
+  }
 }
 
 function reproduce(population) {
@@ -38,14 +49,6 @@ function reproduce(population) {
   return offspring;
 }
 
-function fitness(being) {
-  return levenshtein(being.phenotype, t.target.phenotype);
-}
-
-function mutate(being) {
-  h.mutate(being);
-}
-
 function random_population(length) {
   const population = [];
   for (let i = 0; i < length; i++) {
@@ -57,10 +60,9 @@ function random_population(length) {
 
 const generations = generate({
   population: random_population(100),
-  reproduce,
   mutate,
-  fitness,
-  survival_percentile,
+  reproduce,
+  select: select_by_threshold(fitness, survival_percentile),
   success_conditions: [stop_at_target_fitness(0, fitness)],
   fail_conditions: [stop_at_maximum_rank(1000)],
 });
