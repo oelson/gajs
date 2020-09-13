@@ -27,4 +27,17 @@ function byte_string(byteArray) {
   return String.fromCharCode.apply(null, chars);
 }
 
-module.exports = { integer_to_base, binary_string, byte_string };
+
+function summarize_generation(rank, population, fitness) {
+  const best = population[0];
+  const worst = population[population.length - 1];
+  const best_fitness = fitness(best);
+  const worst_fitness = fitness(worst);
+  return `[${rank}] s:${
+    population.length
+  } f:${best_fitness}-${worst_fitness} b:"${best.phenotype}" (0x${byte_string(
+    best.genotype
+  )})`;
+}
+
+module.exports = { integer_to_base, binary_string, byte_string, summarize_generation };

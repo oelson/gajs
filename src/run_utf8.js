@@ -1,7 +1,7 @@
 // Idée: tout l'outillage de ce fichier, à déplacer avec Utf8Being car c'est indisociable
 // Ne reste ici que le paramétrage et la présentation
 const { stdout } = require("process");
-const { byte_string } = require("./genetic_algorithm/presentation");
+const { summarize_generation } = require("./genetic_algorithm/presentation");
 const { Utf8Being, Utf8Target, encode_utf8 } = require("./species/utf8");
 const {
   Hazard,
@@ -53,33 +53,19 @@ function random_population(length) {
   return population;
 }
 
-function summarize({ rank, population }) {
-  const best = population[0];
-  const worst = population[population.length - 1];
-  const best_fitness = fitness(best);
-  const worst_fitness = fitness(worst);
-  return `\r[${rank}] s:${
-    population.length
-  } f:${best_fitness}-${worst_fitness} b:"${best.phenotype}" (0x${byte_string(
-    best.genotype
-  )})`;
-}
-
 const generations = generate({
   population: random_population(100),
   reproduce,
   mutate,
   fitness,
   survival_percentile,
-  stop_conditions: [
-    stop_at_maximum_rank(1000),
-    stop_at_target_fitness(0, fitness),
-  ],
+  success_conditions: [stop_at_target_fitness(0, fitness)],
+  fail_conditions: [stop_at_maximum_rank(1000)],
 });
 
-for (const generation of generations) {
-  const line = summarize(generation);
-  stdout.write(line);
+for (const { rank, population } of generations) {
+  const line = summarize_generation(rank, population, fitness);
+  stdout.write(`\r${line}`);
 }
 
 stdout.write("\n");

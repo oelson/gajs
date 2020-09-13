@@ -6,16 +6,18 @@ function* generate({
   mutate,
   fitness,
   survival_percentile,
-  stop_conditions,
+  success_conditions,
+  fail_conditions,
 }) {
   let rank = 1;
-  yield { rank, population };
   while (
-    !(
-      population.length === 0 ||
-      stop_conditions.some((f) => f({ rank, population }))
-    )
+    population.length > 0 &&
+    !fail_conditions.some((f) => f({ rank, population }))
   ) {
+    yield { rank, population };
+    if (success_conditions.some((f) => f({ rank, population }))) {
+      break;
+    }
     rank++;
     population = evolve(
       population,
@@ -24,7 +26,6 @@ function* generate({
       fitness,
       survival_percentile
     );
-    yield { rank, population };
   }
 }
 
