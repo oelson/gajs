@@ -37,9 +37,7 @@ function evolve(population, mutate, reproduce, fitness, survival_percentile) {
 
   // life: new beings by reproduction
   // do not put previous beings in descendants (lifetime of 1) in order to keep the population stable
-  const descendants = population
-    .map((being) => reproduce(being, population))
-    .reduce((_population, offspring) => _population.concat(offspring), []);
+  const descendants = reproduce(population);
 
   // death: kill less-adapted beings
   const competition = sortBy(descendants, [fitness]);

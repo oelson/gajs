@@ -27,11 +27,13 @@ function mutate_letters(being) {
   being.genotype = new_genome;
 }
 
-function reproduce(being) {
+function reproduce(population) {
   const offspring = [];
-  for (let i = 0; i < reproduction_rate; i++) {
-    const genome_copy = being.genotype.slice();
-    offspring.push(new Utf8Being(genome_copy));
+  for (const being of population) {
+    for (let i = 0; i < reproduction_rate; i++) {
+      const genome_copy = being.genotype.slice();
+      offspring.push(new Utf8Being(genome_copy));
+    }
   }
   return offspring;
 }
