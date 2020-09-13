@@ -2,13 +2,16 @@
 // Ne reste ici que le paramétrage et la présentation
 const { stdout } = require("process");
 const { byte_string } = require("./genetic_algorithm/presentation");
-const { target_fitness, maximum_rank } = require("./genetic_algorithm/stop");
 const { Utf8Being, Utf8Target, encode_utf8 } = require("./species/utf8");
 const {
   Hazard,
   replace_random_letter,
 } = require("./genetic_algorithm/mutation");
-const { generate } = require("./genetic_algorithm/process");
+const {
+  generate,
+  stop_at_target_fitness,
+  stop_at_maximum_rank,
+} = require("./genetic_algorithm/process");
 const levenshtein = require("js-levenshtein");
 
 const reproduction_rate = 5;
@@ -68,7 +71,10 @@ const generations = generate({
   mutate,
   fitness,
   survival_percentile,
-  stop_conditions: [maximum_rank(1000), target_fitness(0, fitness)],
+  stop_conditions: [
+    stop_at_maximum_rank(1000),
+    stop_at_target_fitness(0, fitness),
+  ],
 });
 
 for (const generation of generations) {
