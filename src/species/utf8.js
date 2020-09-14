@@ -1,10 +1,5 @@
-const {
-  str_distance,
-  byte_vector_distance,
-} = require("../genetic_algorithm/selection");
 const random = require("random");
 const { StringDecoder } = require("string_decoder");
-const levenshtein = require("js-levenshtein");
 
 const Utf8Decoder = new StringDecoder("utf8");
 
@@ -87,57 +82,17 @@ class Utf8Being {
   constructor(genotype) {
     const buffer = Buffer.from(genotype);
     const phenotype = Utf8Decoder.end(buffer);
-
     this.initial_genotype = genotype.slice();
     this.genotype = genotype;
     this.phenotype = phenotype;
   }
 }
 
-class Utf8Target {
-  constructor(text, alphabet) {
-    const genome = encode_utf8(text); // TODO python "replace" equivalent
-    this.target = new Utf8Being(genome);
-    this.alphabet = alphabet;
-  }
-
-  fitness_by_genotype(being) {
-    return byte_vector_distance(being.genotype, this.target.genotype);
-  }
-
-  fitness_by_phenotype(being) {
-    return levenshtein(being.phenotype, this.target.phenotype);
-  }
-
-  random_being_from_alphabet() {
-    const phenotype = random_text(this.target.phenotype.length, this.alphabet);
+class Utf8Target extends Utf8Being {
+  constructor(phenotype) {
     const genotype = encode_utf8(phenotype);
-    return new Utf8Being(genotype);
+    super(genotype);
   }
-
-  random_being_from_bytes() {
-    const genome = random_genome(this.target.genotype.length);
-    return new Utf8Being(genome);
-  }
-}
-
-function random_genome(length) {
-  const genome = [];
-  for (let i = 0; i < length; ++i) {
-    const random_byte = random.int(0x00, 0xff);
-    genome.push(random_byte);
-  }
-  return genome;
-}
-
-function random_text(length, alphabet) {
-  let chars = [];
-  for (var i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * alphabet.length);
-    const randomChar = alphabet.charAt(randomIndex);
-    chars.push(randomChar);
-  }
-  return chars.join("");
 }
 
 module.exports = {
