@@ -57,6 +57,32 @@ function replace_random_letter(text, alphabet) {
   return replace_letter(text, replacement_index, alphabet, alphabet_index);
 }
 
+function insert_letter(text, insertion_index, alphabet, alphabet_index) {
+  const letters = text.split("");
+  const new_letter = alphabet[alphabet_index];
+  letters.splice(insertion_index, 0, new_letter);
+  const new_text = letters.join("");
+  return new_text;
+}
+
+function insert_random_letter(text, alphabet) {
+  const insertion_index = random.int(0, text.length - 1);
+  const alphabet_index = random.int(0, alphabet.length - 1);
+  return insert_letter(text, insertion_index, alphabet, alphabet_index);
+}
+
+function remove_letter(text, removal_index) {
+  const letters = text.split("");
+  letters.splice(removal_index, 1);
+  const new_text = letters.join("");
+  return new_text;
+}
+
+function remove_random_letter(text) {
+  const removal_index = random.int(0, text.length - 1);
+  return remove_letter(text, removal_index);
+}
+
 class Utf8Being {
   constructor(genotype) {
     const buffer = Buffer.from(genotype);
@@ -74,7 +100,7 @@ class Utf8Target {
     this.target = new Utf8Being(genome);
     this.alphabet = alphabet;
   }
-  
+
   fitness_by_genotype(being) {
     return byte_vector_distance(being.genotype, this.target.genotype);
   }
@@ -114,4 +140,11 @@ function random_text(length, alphabet) {
   return chars.join("");
 }
 
-module.exports = { Utf8Being, Utf8Target, encode_utf8, replace_random_letter };
+module.exports = {
+  Utf8Being,
+  Utf8Target,
+  encode_utf8,
+  replace_random_letter,
+  insert_random_letter,
+  remove_random_letter,
+};

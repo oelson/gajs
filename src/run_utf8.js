@@ -6,6 +6,8 @@ const {
   Utf8Being,
   Utf8Target,
   encode_utf8,
+  insert_random_letter,
+  remove_random_letter,
   replace_random_letter,
 } = require("./species/utf8");
 const {
@@ -19,24 +21,34 @@ const {
   stop_at_maximum_rank,
 } = require("./genetic_algorithm/process");
 
-const reproduction_rate = 5;
+const reproduction_rate = 20;
 const survival_percentile = 1 / reproduction_rate;
 const alphabet = "abcdefghijklmnopqrstuvwxyz ";
-const target_string = "cadavre exquis";
+const target_string = "le cadavre exquis boira le vin nouveau";
 const target = new Utf8Target(target_string, alphabet);
 const fitness = target.fitness_by_phenotype.bind(target);
 const hazard = new Hazard(
   [
-    [mutate_letters, 0.7],
-    [(_) => _, 0.3],
+    [insert_letter, 1],
+    [remove_letter, 1],
+    [replace_letter, 1],
   ],
-  3
+  1
 );
 
-function mutate_letters(being) {
+function insert_letter(being) {
+  const new_phenotype = insert_random_letter(being.phenotype, alphabet);
+  being.genotype = encode_utf8(new_phenotype);
+}
+
+function remove_letter(being) {
+  const new_phenotype = remove_random_letter(being.phenotype);
+  being.genotype = encode_utf8(new_phenotype);
+}
+
+function replace_letter(being) {
   const new_phenotype = replace_random_letter(being.phenotype, alphabet);
-  const new_genome = encode_utf8(new_phenotype);
-  being.genotype = new_genome;
+  being.genotype = encode_utf8(new_phenotype);
 }
 
 function mutate_bytes(being) {
@@ -45,7 +57,8 @@ function mutate_bytes(being) {
 
 function survival_probability(being) {
   const score = fitness(being);
-  return 1 - score / target_string.length;
+  const death_probability = score / target_string.length;
+  return 1 - death_probability;
 }
 
 function hazard_each_being(population) {
@@ -80,12 +93,10 @@ const generations = generate({
   reproduce: clone_each_being,
   select: select_by_threshold(survival_probability, survival_percentile),
   success_conditions: [stop_at_target_fitness(0, fitness)],
-  fail_conditions: [stop_at_maximum_rank(1000)],
+  fail_conditions: [stop_at_maximum_rank(10000)],
 });
 
 for (const { rank, population } of generations) {
   const line = summarize_generation(rank, population, fitness);
-  stdout.write(`\r${line}`);
+  console.log(line);
 }
-
-stdout.write("\n");
