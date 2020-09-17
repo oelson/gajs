@@ -37,13 +37,13 @@ function stop_at_maximum_rank(maximum) {
   return ({ rank }) => rank > maximum;
 }
 
-function stop_at_target_fitness(target, fitness) {
-  return ({ population }) => population.some((b) => fitness(b) === target);
+function stop_at_certain_survival(survival_probability) {
+  return ({ population }) => population.some((b) => survival_probability(b) === 1);
 }
 
 module.exports = {
   generate,
   select_by_threshold,
   stop_at_maximum_rank,
-  stop_at_target_fitness,
+  stop_at_certain_survival,
 };

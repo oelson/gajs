@@ -19,7 +19,7 @@ const {
 const {
   generate,
   select_by_threshold,
-  stop_at_target_fitness,
+  stop_at_certain_survival,
   stop_at_maximum_rank,
 } = require("./genetic_algorithm/process");
 
@@ -131,7 +131,7 @@ const generations = generate({
   mutate: hazard_each_being,
   reproduce: clone_each_being,
   select: select_by_threshold(survival_probability, survival_percentile),
-  success_conditions: [stop_at_target_fitness(0, fitness)],
+  success_conditions: [stop_at_certain_survival(survival_probability)],
   fail_conditions: [stop_at_maximum_rank(10000)],
 });
 
