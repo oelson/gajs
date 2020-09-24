@@ -26,4 +26,13 @@ class Hazard {
   }
 }
 
-module.exports = { Hazard };
+function build(mutation_index, mutation_names_and_weights, maximum_per_cycle) {
+  const mutations_array = [];
+  for (const [name, weight] of Object.entries(mutation_names_and_weights)) {
+    const mutation_fn = mutation_index[name];
+    mutations_array.push([mutation_fn, weight]);
+  }
+  return new Hazard(mutations_array, maximum_per_cycle);
+}
+
+module.exports = { Hazard, build };

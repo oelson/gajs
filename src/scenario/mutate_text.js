@@ -9,7 +9,7 @@ const {
   random_text_being_of_random_length,
   random_text_being_of_fixed_length,
 } = require("../species/utf8");
-const { Hazard } = require("../ga/hazard");
+const { build: build_hazard } = require("../ga/hazard");
 const {
   flip_random_bit_in_random_byte,
   replace_random_byte,
@@ -121,12 +121,11 @@ function* mutate_text({
     return keep_best_percentile(population, survival_p_fn, survival_percentile);
   }
 
-  const mutations_array = [];
-  for (const [name, weight] of Object.entries(mutations.functions)) {
-    const mutation_fn = choices.mutation[name];
-    mutations_array.push([mutation_fn, weight]);
-  }
-  const hazard = new Hazard(mutations_array, mutations.maximum_per_cycle);
+  const hazard = build_hazard(
+    choices.mutation,
+    mutations.functions,
+    mutations.maximum_per_cycle
+  );
   const initial_population_fn = choices.population[initial_population.function];
   const target = new Utf8Target(target_text.text);
   const survival_p_fn = choices.evaluation[survival_probability];
