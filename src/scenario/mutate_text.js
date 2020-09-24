@@ -110,24 +110,19 @@ function* mutate_text({
   }
 
   function select_by_survival_probability(population) {
-    return keep_best_percentile(
-      population,
-      survival_p_fn,
-      survival_percentile
-    );
+    const survival_percentile = 1 / reproduction_rate;
+    return keep_best_percentile(population, survival_p_fn, survival_percentile);
   }
 
   const mutations_array = [];
   for (const [name, weight] of Object.entries(mutations.functions)) {
-    const mutation = choices.mutation[name];
-    mutations_array.push([mutation, weight]);
+    const mutation_fn = choices.mutation[name];
+    mutations_array.push([mutation_fn, weight]);
   }
   const hazard = new Hazard(mutations_array, mutations.maximum_per_cycle);
-
-  const survival_p_fn = choices.evaluation[survival_probability];
-  const survival_percentile = 1 / reproduction_rate;
-  const target = new Utf8Target(target_text.text);
   const initial_population_fn = choices.population[initial_population.function];
+  const target = new Utf8Target(target_text.text);
+  const survival_p_fn = choices.evaluation[survival_probability];
 
   const generations = generate({
     population: collect(initial_population_fn, initial_population.length),
