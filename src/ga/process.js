@@ -25,25 +25,24 @@ function* generate({
   }
 }
 
-function select_by_threshold(survival_probability, survival_percentile) {
-  return function (population) {
-    const competition = sortBy(population, [survival_probability]);
-    const threshold = parseInt(population.length * (1 - survival_percentile));
-    return competition.slice(threshold);
-  };
+function keep_best_percentile(population, evaluate_being, survival_percentile) {
+  const competition = sortBy(population, [evaluate_being]);
+  const threshold = parseInt(population.length * (1 - survival_percentile));
+  return competition.slice(threshold);
 }
 
 function stop_at_maximum_rank(maximum) {
   return ({ rank }) => rank > maximum;
 }
 
-function stop_at_certain_survival(survival_probability) {
-  return ({ population }) => population.some((b) => survival_probability(b) === 1);
+function stop_when_survival_is_certain(survival_probability) {
+  return ({ population }) =>
+    population.some((b) => survival_probability(b) === 1);
 }
 
 module.exports = {
   generate,
-  select_by_threshold,
+  keep_best_percentile,
   stop_at_maximum_rank,
-  stop_at_certain_survival,
+  stop_when_survival_is_certain,
 };
