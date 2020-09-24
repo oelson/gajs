@@ -112,7 +112,7 @@ function* mutate_text({
   function select_by_survival_probability(population) {
     return keep_best_percentile(
       population,
-      survival_p_function,
+      survival_p_fn,
       survival_percentile
     );
   }
@@ -124,25 +124,24 @@ function* mutate_text({
   }
   const hazard = new Hazard(mutations_array, mutations.maximum_per_cycle);
 
-  const survival_p_function = choices.evaluation[survival_probability];
+  const survival_p_fn = choices.evaluation[survival_probability];
   const survival_percentile = 1 / reproduction_rate;
   const target = new Utf8Target(target_text.text);
-  const initial_population_function =
-    choices.population[initial_population.function];
+  const initial_population_fn = choices.population[initial_population.function];
 
   const generations = generate({
-    population: collect(initial_population_function, initial_population.length),
+    population: collect(initial_population_fn, initial_population.length),
     mutate: hazard_each_being,
     reproduce: clone_each_being,
     select: select_by_survival_probability,
-    success_conditions: [stop_when_survival_is_certain(survival_p_function)],
+    success_conditions: [stop_when_survival_is_certain(survival_p_fn)],
     fail_conditions: [stop_at_maximum_rank(maximum_rank)],
   });
 
   for (const { rank, population } of generations) {
     const population_with_survival_p = [];
     for (const being of population) {
-      const being_survival_p = survival_p_function(being);
+      const being_survival_p = survival_p_fn(being);
       const pair = [being, being_survival_p];
       population_with_survival_p.push(pair);
     }
