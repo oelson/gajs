@@ -5,7 +5,7 @@ const Utf8Decoder = new StringDecoder("utf8");
 
 function encode_utf8(s) {
   let i = 0,
-    bytes = new Uint8Array(s.length * 4);
+    bytes = new Array(s.length * 4);
   for (let ci = 0; ci != s.length; ci++) {
     let c = s.charCodeAt(ci);
     if (c < 128) {
@@ -35,7 +35,7 @@ function encode_utf8(s) {
     }
     bytes[i++] = (c & 63) | 128;
   }
-  return bytes.subarray(0, i);
+  return bytes.slice(0, i);
 }
 
 function replace_letter(text, replacement_index, alphabet, alphabet_index) {
@@ -94,6 +94,26 @@ class Utf8Target extends Utf8Being {
     super(genotype);
   }
 }
+function random_text_being_of_random_length(alphabet, max_length) {
+  const length = random.int(0, max_length);
+  return random_text_being_of_fixed_length(alphabet, length);
+}
+
+function random_text_being_of_fixed_length(alphabet, length) {
+  const phenotype = random_text(length, alphabet);
+  const genotype = encode_utf8(phenotype);
+  return new Utf8Being(genotype);
+}
+
+function random_text(length, alphabet) {
+  let chars = [];
+  for (var i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * alphabet.length);
+    const randomChar = alphabet.charAt(randomIndex);
+    chars.push(randomChar);
+  }
+  return chars.join("");
+}
 
 module.exports = {
   Utf8Being,
@@ -102,4 +122,6 @@ module.exports = {
   replace_random_letter,
   insert_random_letter,
   remove_random_letter,
+  random_text_being_of_random_length,
+  random_text_being_of_fixed_length,
 };

@@ -8,6 +8,8 @@ const {
   insert_random_letter,
   remove_random_letter,
   replace_random_letter,
+  random_text_being_of_random_length,
+  random_text_being_of_fixed_length,
 } = require("./species/utf8");
 const { Hazard } = require("./genetic_algorithm/hazard");
 const {
@@ -28,6 +30,7 @@ const survival_percentile = 1 / reproduction_rate;
 const alphabet = "abcdefghijklmnopqrstuvwxyz ";
 const target_string = "le cadavre exquis boira le vin nouveau";
 const target = new Utf8Target(target_string);
+
 const fitness = fitness_by_phenotype;
 const hazard = new Hazard(
   [
@@ -37,7 +40,7 @@ const hazard = new Hazard(
     //[remove_byte, 1],
     [insert_letter, 1],
     [remove_letter, 1],
-    [replace_letter, 10],
+    [replace_letter, 7],
   ],
   1
 );
@@ -104,30 +107,25 @@ function clone_each_being(population) {
   return offspring;
 }
 
-function random_population_from_alphabet(length, alphabet) {
-  const population = [];
-  for (let i = 0; i < length; i++) {
-    const size = random.int(0, target.phenotype.length);
-    const phenotype = random_text(size, alphabet);
-    const genotype = encode_utf8(phenotype);
-    const being = new Utf8Being(genotype);
-    population.push(being);
+function collect(times, func) {
+  const l = [];
+  for (let i = 0; i < times; i++) {
+    const x = func();
+    l.push(x);
   }
-  return population;
+  return l;
 }
 
-function random_text(length, alphabet) {
-  let chars = [];
-  for (var i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * alphabet.length);
-    const randomChar = alphabet.charAt(randomIndex);
-    chars.push(randomChar);
-  }
-  return chars.join("");
+function random_text_being_of_fixed_target_length() {
+  return random_text_being_of_fixed_length(alphabet, target.phenotype.length);
+}
+
+function random_text_being_of_random_target_length() {
+  return random_text_being_of_random_length(alphabet, target.phenotype.length);
 }
 
 const generations = generate({
-  population: random_population_from_alphabet(100, alphabet),
+  population: collect(100, random_text_being_of_random_target_length),
   mutate: hazard_each_being,
   reproduce: clone_each_being,
   select: select_by_threshold(survival_probability, survival_percentile),
