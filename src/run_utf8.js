@@ -13,9 +13,13 @@ const generations = mutate_text({
   },
   mutations: {
     functions: {
-      insert_letter: 1,
-      remove_letter: 1,
-      replace_letter: 7,
+      insert_letter: 0,
+      remove_letter: 0,
+      replace_letter: 0,
+      insert_byte: 1,
+      remove_byte: 1,
+      replace_byte: 0,
+      alter_byte: 0,
     },
     maximum_per_cycle: 1,
   },

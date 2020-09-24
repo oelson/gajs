@@ -22,6 +22,7 @@ const {
   stop_when_survival_is_certain,
   stop_at_maximum_rank,
 } = require("../ga/process");
+const { byte_string } = require("../ga/presentation");
 
 function* mutate_text({
   initial_population,
@@ -71,8 +72,11 @@ function* mutate_text({
         return 1 - death_probability;
       },
       evaluate_genotype(being) {
-        const score = levenshtein(being.genotype, target.genotype);
-        const death_probability = score / target.genotype.length;
+        // workaround...
+        const being_genotype_string = byte_string(being.genotype);
+        const target_genotype_string = byte_string(target.genotype);
+        const score = levenshtein(being_genotype_string, target_genotype_string);
+        const death_probability = score / target_genotype_string.length;
         return 1 - death_probability;
       },
     },
