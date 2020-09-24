@@ -27,11 +27,9 @@ function byte_string(byteArray) {
   return String.fromCharCode.apply(null, chars);
 }
 
-function summarize_generation(rank, population, survival_p) {
-  const best = population[population.length - 1];
-  const worst = population[0];
-  const best_survival_p = survival_p(best);
-  const worst_survival_p = survival_p(worst);
+function summarize_generation(rank, population) {
+  const [best, best_survival_p] = population[population.length - 1];
+  const [worst, worst_survival_p] = population[0];
   const best_survival = best_survival_p.toFixed(2);
   const worst_survival = worst_survival_p.toFixed(2);
   return `[${rank}] s:${

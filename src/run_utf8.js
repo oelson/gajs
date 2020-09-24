@@ -1,6 +1,7 @@
 const { mutate_text } = require("./scenario/mutate_text");
+const { summarize_generation } = require("./ga/presentation");
 
-mutate_text({
+const generations = mutate_text({
   initial_population: {
     length: 100,
     function: "random_text_being_of_random_target_length",
@@ -21,3 +22,8 @@ mutate_text({
   survival_probability: "evaluate_phenotype",
   maximum_rank: 10000,
 });
+
+for (const { rank, population_with_survival_p } of generations) {
+  const summary = summarize_generation(rank, population_with_survival_p);
+  console.log(summary);
+}

@@ -1,5 +1,4 @@
 const levenshtein = require("js-levenshtein");
-const { summarize_generation } = require("../ga/presentation");
 const {
   Utf8Being,
   Utf8Target,
@@ -24,7 +23,7 @@ const {
   stop_at_maximum_rank,
 } = require("../ga/process");
 
-function mutate_text({
+function* mutate_text({
   initial_population,
   reproduction_rate,
   mutations,
@@ -141,8 +140,13 @@ function mutate_text({
   });
 
   for (const { rank, population } of generations) {
-    const line = summarize_generation(rank, population, survival_p_function);
-    console.log(line);
+    const population_with_survival_p = [];
+    for (const being of population) {
+      const being_survival_p = survival_p_function(being);
+      const pair = [being, being_survival_p];
+      population_with_survival_p.push(pair);
+    }
+    yield { rank, population_with_survival_p };
   }
 }
 
