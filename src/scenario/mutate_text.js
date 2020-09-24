@@ -31,64 +31,64 @@ function* mutate_text({
   target_text,
   maximum_rank,
 }) {
-  const mutation_index = {
-    insert_letter(being) {
-      const new_phenotype = insert_random_letter(
-        being.phenotype,
-        target_text.alphabet
-      );
-      being.genotype = encode_utf8(new_phenotype);
+  const choices = {
+    mutation: {
+      insert_letter(being) {
+        const new_phenotype = insert_random_letter(
+          being.phenotype,
+          target_text.alphabet
+        );
+        being.genotype = encode_utf8(new_phenotype);
+      },
+      remove_letter(being) {
+        const new_phenotype = remove_random_letter(being.phenotype);
+        being.genotype = encode_utf8(new_phenotype);
+      },
+      replace_letter(being) {
+        const new_phenotype = replace_random_letter(
+          being.phenotype,
+          target_text.alphabet
+        );
+        being.genotype = encode_utf8(new_phenotype);
+      },
+      insert_byte(being) {
+        insert_random_byte(being.genotype);
+      },
+      remove_byte(being) {
+        remove_random_byte(being.genotype);
+      },
+      replace_byte(being) {
+        replace_random_byte(being.genotype);
+      },
+      alter_byte(being) {
+        flip_random_bit_in_random_byte(being.genotype);
+      },
     },
-    remove_letter(being) {
-      const new_phenotype = remove_random_letter(being.phenotype);
-      being.genotype = encode_utf8(new_phenotype);
+    evaluation: {
+      evaluate_phenotype(being) {
+        const score = levenshtein(being.phenotype, target.phenotype);
+        const death_probability = score / target.phenotype.length;
+        return 1 - death_probability;
+      },
+      evaluate_genotype(being) {
+        const score = levenshtein(being.genotype, target.genotype);
+        const death_probability = score / target.genotype.length;
+        return 1 - death_probability;
+      },
     },
-    replace_letter(being) {
-      const new_phenotype = replace_random_letter(
-        being.phenotype,
-        target_text.alphabet
-      );
-      being.genotype = encode_utf8(new_phenotype);
-    },
-    insert_byte(being) {
-      insert_random_byte(being.genotype);
-    },
-    remove_byte(being) {
-      remove_random_byte(being.genotype);
-    },
-    replace_byte(being) {
-      replace_random_byte(being.genotype);
-    },
-    alter_byte(being) {
-      flip_random_bit_in_random_byte(being.genotype);
-    },
-  };
-
-  const survival_p_index = {
-    evaluate_phenotype(being) {
-      const score = levenshtein(being.phenotype, target.phenotype);
-      const death_probability = score / target.phenotype.length;
-      return 1 - death_probability;
-    },
-    evaluate_genotype(being) {
-      const score = levenshtein(being.genotype, target.genotype);
-      const death_probability = score / target.genotype.length;
-      return 1 - death_probability;
-    },
-  };
-
-  const initial_population_index = {
-    random_text_being_of_fixed_target_length() {
-      return random_text_being_of_fixed_length(
-        target_text.alphabet,
-        target.phenotype.length
-      );
-    },
-    random_text_being_of_random_target_length() {
-      return random_text_being_of_random_length(
-        target_text.alphabet,
-        target.phenotype.length
-      );
+    population: {
+      random_text_being_of_fixed_target_length() {
+        return random_text_being_of_fixed_length(
+          target_text.alphabet,
+          target.phenotype.length
+        );
+      },
+      random_text_being_of_random_target_length() {
+        return random_text_being_of_random_length(
+          target_text.alphabet,
+          target.phenotype.length
+        );
+      },
     },
   };
 
@@ -119,16 +119,16 @@ function* mutate_text({
 
   const mutations_array = [];
   for (const [name, weight] of Object.entries(mutations.functions)) {
-    const mutation = mutation_index[name];
+    const mutation = choices.mutation[name];
     mutations_array.push([mutation, weight]);
   }
   const hazard = new Hazard(mutations_array, mutations.maximum_per_cycle);
 
-  const survival_p_function = survival_p_index[survival_probability];
+  const survival_p_function = choices.evaluation[survival_probability];
   const survival_percentile = 1 / reproduction_rate;
   const target = new Utf8Target(target_text.text);
   const initial_population_function =
-    initial_population_index[initial_population.function];
+    choices.population[initial_population.function];
 
   const generations = generate({
     population: collect(initial_population_function, initial_population.length),
