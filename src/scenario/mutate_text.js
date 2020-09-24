@@ -73,8 +73,8 @@ function* mutate_text({
       },
       evaluate_genotype(being) {
         // workaround...
-        const being_genotype_string = byte_string(being.genotype);
-        const target_genotype_string = byte_string(target.genotype);
+        const being_genotype_string = being.genotype_byte_string;
+        const target_genotype_string = target.genotype_byte_string;
         const score = levenshtein(
           being_genotype_string,
           target_genotype_string

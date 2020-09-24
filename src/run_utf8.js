@@ -1,5 +1,12 @@
 const { mutate_text } = require("./scenario/mutate_text");
-const { summarize_generation } = require("./ga/presentation");
+
+function summarize_generation(rank, population) {
+  const [best, best_survival_p] = population[population.length - 1];
+  const [worst, worst_survival_p] = population[0];
+  const best_survival = best_survival_p.toFixed(2);
+  const worst_survival = worst_survival_p.toFixed(2);
+  return `[${rank}] s:${population.length} f:${best_survival}-${worst_survival} b:"${best.phenotype}" (0x${best.genotype_byte_string})`;
+}
 
 const generations = mutate_text({
   initial_population: {

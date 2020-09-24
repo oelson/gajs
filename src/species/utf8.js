@@ -1,5 +1,6 @@
 const random = require("random");
 const { StringDecoder } = require("string_decoder");
+const { byte_string } = require("../ga/presentation");
 
 const Utf8Decoder = new StringDecoder("utf8");
 
@@ -82,9 +83,9 @@ class Utf8Being {
   constructor(genotype) {
     const buffer = Buffer.from(genotype);
     const phenotype = Utf8Decoder.end(buffer);
-    this.initial_genotype = genotype.slice();
     this.genotype = genotype;
     this.phenotype = phenotype;
+    this.genotype_byte_string = byte_string(genotype);
   }
 }
 
