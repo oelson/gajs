@@ -31,6 +31,10 @@ const generations = mutate_text({
     maximum_per_cycle: 1,
   },
   survival_probability: "evaluate_phenotype",
+  reproduction: {
+    rate: 20,
+    function: "clone_each_being",
+  },
   maximum_rank: 10000,
 });
 

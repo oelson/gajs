@@ -22,11 +22,10 @@ const {
   stop_when_survival_is_certain,
   stop_at_maximum_rank,
 } = require("../ga/process");
-const { byte_string } = require("../ga/presentation");
 
 function* mutate_text({
   initial_population,
-  reproduction_rate,
+  reproduction,
   mutations,
   survival_probability,
   target_text,
@@ -97,6 +96,18 @@ function* mutate_text({
         );
       },
     },
+    reproduction: {
+      clone_each_being(population) {
+        const offspring = [];
+        for (const being of population) {
+          for (let i = 0; i < reproduction.rate; i++) {
+            const genome_copy = being.genotype.slice();
+            offspring.push(new Utf8Being(genome_copy));
+          }
+        }
+        return offspring;
+      },
+    },
   };
 
   function hazard_each_being(population) {
@@ -105,19 +116,8 @@ function* mutate_text({
     }
   }
 
-  function clone_each_being(population) {
-    const offspring = [];
-    for (const being of population) {
-      for (let i = 0; i < reproduction_rate; i++) {
-        const genome_copy = being.genotype.slice();
-        offspring.push(new Utf8Being(genome_copy));
-      }
-    }
-    return offspring;
-  }
-
   function select_by_survival_probability(population) {
-    const survival_percentile = 1 / reproduction_rate;
+    const survival_percentile = 1 / reproduction.rate;
     return keep_best_percentile(population, survival_p_fn, survival_percentile);
   }
 
@@ -130,11 +130,12 @@ function* mutate_text({
   const initial_population_fn = choices.population[initial_population.function];
   const target = new Utf8Target(target_text.text);
   const survival_p_fn = choices.evaluation[survival_probability];
+  const reproduction_fn = choices.reproduction[reproduction.function];
 
   const generations = generate({
     population: collect(initial_population_fn, initial_population.length),
     mutate: hazard_each_being,
-    reproduce: clone_each_being,
+    reproduce: reproduction_fn,
     select: select_by_survival_probability,
     success_conditions: [stop_when_survival_is_certain(survival_p_fn)],
     fail_conditions: [stop_at_maximum_rank(maximum_rank)],
