@@ -1,4 +1,4 @@
-const levenshtein = require("js-levenshtein");
+const { distance: levenshtein } = require("fastest-levenshtein");
 const {
   Utf8Being,
   Utf8Target,
@@ -75,7 +75,10 @@ function* mutate_text({
         // workaround...
         const being_genotype_string = byte_string(being.genotype);
         const target_genotype_string = byte_string(target.genotype);
-        const score = levenshtein(being_genotype_string, target_genotype_string);
+        const score = levenshtein(
+          being_genotype_string,
+          target_genotype_string
+        );
         const death_probability = score / target_genotype_string.length;
         return 1 - death_probability;
       },
