@@ -1,7 +1,7 @@
 const { distance: levenshtein } = require("fastest-levenshtein");
 const {
-  Utf8Being,
-  Utf8Target,
+  utf8_being,
+  utf8_target,
   encode_utf8,
   insert_random_letter,
   remove_random_letter,
@@ -98,7 +98,8 @@ function* mutate_text({
         for (const being of population) {
           for (let i = 0; i < reproduction.rate; i++) {
             const genome_copy = being.genotype.slice();
-            offspring.push(new Utf8Being(genome_copy));
+            const clone = utf8_being(genome_copy);
+            offspring.push(clone);
           }
         }
         return offspring;
@@ -125,7 +126,7 @@ function* mutate_text({
     mutations.maximum_per_cycle
   );
   const initial_population_fn = choices.population[initial_population.function];
-  const target = new Utf8Target(target_text.text);
+  const target = utf8_target(target_text.text);
   const survival_p_fn = choices.evaluation[survival_probability];
   const reproduction_fn = choices.reproduction[reproduction.function];
   const success_fns = stop.success.map((success) => choices.stop[success]);

@@ -79,22 +79,21 @@ function remove_random_letter(text) {
   return remove_letter(text, removal_index);
 }
 
-class Utf8Being {
-  constructor(genotype) {
-    const buffer = Buffer.from(genotype);
-    const phenotype = Utf8Decoder.end(buffer);
-    this.genotype = genotype;
-    this.phenotype = phenotype;
-    this.genotype_byte_string = byte_string(genotype);
-  }
+function utf8_being(genotype) {
+  const buffer = Buffer.from(genotype);
+  const phenotype = Utf8Decoder.end(buffer);
+  return {
+    genotype,
+    phenotype,
+    genotype_byte_string: byte_string(genotype),
+  };
 }
 
-class Utf8Target extends Utf8Being {
-  constructor(phenotype) {
-    const genotype = encode_utf8(phenotype);
-    super(genotype);
-  }
+function utf8_target(phenotype) {
+  const genotype = encode_utf8(phenotype);
+  return utf8_being(genotype);
 }
+
 function random_text_being_of_random_length(alphabet, max_length) {
   const length = random.int(0, max_length);
   return random_text_being_of_fixed_length(alphabet, length);
@@ -103,7 +102,7 @@ function random_text_being_of_random_length(alphabet, max_length) {
 function random_text_being_of_fixed_length(alphabet, length) {
   const phenotype = random_text(length, alphabet);
   const genotype = encode_utf8(phenotype);
-  return new Utf8Being(genotype);
+  return utf8_being(genotype);
 }
 
 function random_text(length, alphabet) {
@@ -117,8 +116,8 @@ function random_text(length, alphabet) {
 }
 
 module.exports = {
-  Utf8Being,
-  Utf8Target,
+  utf8_being,
+  utf8_target,
   encode_utf8,
   replace_random_letter,
   insert_random_letter,
