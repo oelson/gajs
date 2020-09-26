@@ -31,6 +31,7 @@ const generations = mutate_text({
     maximum_per_cycle: 1,
   },
   survival_probability: "evaluate_phenotype",
+  selection: "select_best_percentile_with_stability",
   reproduction: {
     rate: 20,
     function: "clone_each_being",

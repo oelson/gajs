@@ -16,12 +16,13 @@ const {
   insert_random_byte,
   remove_random_byte,
 } = require("../ga/genome");
-const { generate, keep_best_percentile } = require("../ga/process");
+const { generate, select_best_percentile } = require("../ga/process");
 
 function* mutate_text({
   initial_population,
   reproduction,
   mutations,
+  selection,
   survival_probability,
   target_text,
   maximum_rank,
@@ -78,6 +79,15 @@ function* mutate_text({
         return 1 - death_probability;
       },
     },
+    selection: {
+      select_best_percentile_with_stability(population) {
+        return select_best_percentile(
+          population,
+          survival_p_fn,
+          1 - 1 / reproduction.rate
+        );
+      },
+    },
     population: {
       random_text_being_of_fixed_target_length() {
         return random_text_being_of_fixed_length(
@@ -115,11 +125,6 @@ function* mutate_text({
     },
   };
 
-  function select_by_survival_probability(population) {
-    const survival_percentile = 1 / reproduction.rate;
-    return keep_best_percentile(population, survival_p_fn, survival_percentile);
-  }
-
   const hazard_fn = hazard(
     choices.mutation,
     mutations.functions,
@@ -133,12 +138,13 @@ function* mutate_text({
   const failure_fns = stop.failure.map((failure) => choices.stop[failure]);
   const success_fn = (g) => success_fns.some((f) => f(g) === true);
   const failure_fn = (g) => failure_fns.some((f) => f(g) === true);
+  const select_fn = choices.selection[selection];
 
   const generations = generate({
     population: collect(initial_population_fn, initial_population.length),
     mutate: (p) => p.forEach(hazard_fn),
     reproduce: reproduction_fn,
-    select: select_by_survival_probability,
+    select: select_fn,
     success: success_fn,
     failure: failure_fn,
   });

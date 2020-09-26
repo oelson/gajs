@@ -1,5 +1,3 @@
-const { sortBy } = require("lodash");
-
 function* generate({
   population,
   reproduce,
@@ -21,13 +19,12 @@ function* generate({
   }
 }
 
-function keep_best_percentile(population, evaluate_being, survival_percentile) {
-  const competition = sortBy(population, [evaluate_being]);
-  const threshold = parseInt(population.length * (1 - survival_percentile));
+const { sortBy } = require("lodash");
+
+function select_best_percentile(population, survival_p_fn, percentile) {
+  const competition = sortBy(population, [survival_p_fn]);
+  const threshold = parseInt(population.length * percentile);
   return competition.slice(threshold);
 }
 
-module.exports = {
-  generate,
-  keep_best_percentile,
-};
+module.exports = { generate, select_best_percentile };
