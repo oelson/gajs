@@ -8,16 +8,15 @@ function* generate({
   success_conditions,
   fail_conditions,
 }) {
-  let rank = 1;
-  while (
+  for (
+    let rank = 1;
     population.length > 0 &&
-    !fail_conditions.some((f) => f({ rank, population }))
+    !fail_conditions.some((f) => f({ rank, population }));
+    rank++
   ) {
     yield { rank, population };
-    if (success_conditions.some((f) => f({ rank, population }))) {
-      break;
-    }
-    rank++;
+
+    if (success_conditions.some((f) => f({ rank, population }))) break;
 
     mutate(population);
     const new_population = reproduce(population);
