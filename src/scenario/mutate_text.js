@@ -9,7 +9,7 @@ const {
   random_text_being_of_random_length,
   random_text_being_of_fixed_length,
 } = require("../species/utf8");
-const { build: build_hazard } = require("../ga/hazard");
+const { hazard } = require("../ga/hazard");
 const {
   flip_random_bit_in_random_byte,
   replace_random_byte,
@@ -114,18 +114,12 @@ function* mutate_text({
     },
   };
 
-  function hazard_each_being(population) {
-    for (const being of population) {
-      hazard.mutate(being);
-    }
-  }
-
   function select_by_survival_probability(population) {
     const survival_percentile = 1 / reproduction.rate;
     return keep_best_percentile(population, survival_p_fn, survival_percentile);
   }
 
-  const hazard = build_hazard(
+  const hazard_fn = hazard(
     choices.mutation,
     mutations.functions,
     mutations.maximum_per_cycle
@@ -141,7 +135,7 @@ function* mutate_text({
 
   const generations = generate({
     population: collect(initial_population_fn, initial_population.length),
-    mutate: hazard_each_being,
+    mutate: (p) => p.forEach(hazard_fn),
     reproduce: reproduction_fn,
     select: select_by_survival_probability,
     success: success_fn,

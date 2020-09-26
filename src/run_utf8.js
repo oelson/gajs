@@ -16,7 +16,7 @@ const generations = mutate_text({
   reproduction_rate: 20,
   target_text: {
     alphabet: "abcdefghijklmnopqrstuvwxyz ",
-    text: "monique est super chouette",
+    text: "abc",
   },
   mutations: {
     functions: {
@@ -26,7 +26,7 @@ const generations = mutate_text({
       insert_byte: 1,
       remove_byte: 1,
       replace_byte: 0,
-      alter_byte: 0,
+      alter_byte: 1000,
     },
     maximum_per_cycle: 1,
   },
