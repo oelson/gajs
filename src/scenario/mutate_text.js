@@ -96,9 +96,7 @@ function mutate_text(conf) {
     reproduction: {
       clone(being) {
         const genome_copy = being.genotype.slice();
-        const clone = utf8_being(genome_copy);
-        clone.survival_p = survival_p_fn(clone);
-        return clone;
+        return utf8_being(genome_copy);
       },
     },
     stop: {
@@ -126,11 +124,16 @@ function mutate_text(conf) {
   const success_fn = (g) => success_fns.some((f) => f(g) === true);
   const failure_fn = (g) => failure_fns.some((f) => f(g) === true);
 
+  function label(being, ancestors) {
+    being.survival_p = survival_p_fn(being);
+    being.ancestors = ancestors;
+  }
+
   function initial_population() {
     const population = [];
     for (let i = 0; i < conf.start.length; i++) {
       const being = initial_population_fn();
-      being.survival_p = survival_p_fn(being);
+      label(being);
       population.push(being);
     }
     return population;
@@ -141,6 +144,7 @@ function mutate_text(conf) {
     for (const being of population) {
       for (let i = 0; i < conf.reproduction.rate; i++) {
         const child = reproduction_fn(being);
+        label(child);
         offspring.push(child);
       }
     }
