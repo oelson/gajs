@@ -9,12 +9,19 @@ function summarize_generation(rank, population) {
 }
 
 const generations = mutate_text({
-  initial_population: {
+  start: {
     length: 100,
-    function: "random_text_being_of_random_target_length",
+    function: "random_variable_length",
   },
-  reproduction_rate: 20,
-  target_text: {
+  reproduction: {
+    rate: 20,
+    function: "clone",
+  },
+  selection: {
+    evaluation: "evaluate_phenotype",
+    reduction: "keep_population_stable",
+  },
+  target: {
     alphabet: "abcdefghijklmnopqrstuvwxyz ",
     text: "abc",
   },
@@ -30,14 +37,8 @@ const generations = mutate_text({
     },
     maximum_per_cycle: 1,
   },
-  survival_probability: "evaluate_phenotype",
-  selection: "select_best_percentile_with_stability",
-  reproduction: {
-    rate: 20,
-    function: "clone_each_being",
-  },
-  maximum_rank: 10000,
   stop: {
+    rank: 10000,
     success: ["stop_when_survival_is_certain"],
     failure: ["stop_at_maximum_rank"],
   },
