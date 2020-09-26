@@ -106,7 +106,7 @@ function mutate_text(conf) {
         return rank > conf.stop.rank;
       },
       stop_when_survival_is_certain({ population }) {
-        return population.some((being) => survival_p_fn(being) === 1);
+        return population.some((being) => being.survival_p === 1);
       },
     },
   };

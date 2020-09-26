@@ -1,13 +1,5 @@
 const { mutate_text } = require("./scenario/mutate_text");
 
-function summarize_generation(rank, population) {
-  const best = population[population.length - 1];
-  const worst = population[0];
-  const best_survival = best.survival_p.toFixed(2);
-  const worst_survival = worst.survival_p.toFixed(2);
-  return `[${rank}] s:${population.length} f:${best_survival}-${worst_survival} b:"${best.phenotype}" (0x${best.genotype_byte_string})`;
-}
-
 const generations = mutate_text({
   start: {
     length: 100,
@@ -45,6 +37,10 @@ const generations = mutate_text({
 });
 
 for (const { rank, population } of generations) {
-  const summary = summarize_generation(rank, population);
+  const best = population[population.length - 1];
+  const worst = population[0];
+  const best_survival = best.survival_p.toFixed(2);
+  const worst_survival = worst.survival_p.toFixed(2);
+  const summary = `[${rank}] s:${population.length} f:${best_survival}-${worst_survival} b:"${best.phenotype}" (0x${best.genotype_byte_string})`;
   console.log(summary);
 }
