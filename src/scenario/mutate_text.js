@@ -18,6 +18,7 @@ const {
 } = require("../ga/genome");
 const { generate } = require("../ga/process");
 const { sortBy } = require("lodash");
+const { byte_string } = require("../ga/presentation");
 
 function mutate_text(conf) {
   const choices = {
@@ -127,13 +128,14 @@ function mutate_text(conf) {
   function label(being, ancestors) {
     being.survival_p = survival_p_fn(being);
     being.ancestors = ancestors;
+    being.genotype_byte_string = byte_string(being.genotype);
   }
 
   function initial_population() {
     const population = [];
     for (let i = 0; i < conf.start.length; i++) {
       const being = initial_population_fn();
-      label(being);
+      label(being, []);
       population.push(being);
     }
     return population;
@@ -141,10 +143,10 @@ function mutate_text(conf) {
 
   function reproduce(population) {
     const offspring = [];
-    for (const being of population) {
+    for (const parent of population) {
       for (let i = 0; i < conf.reproduction.rate; i++) {
-        const child = reproduction_fn(being);
-        label(child);
+        const child = reproduction_fn(parent);
+        label(child, [parent]);
         offspring.push(child);
       }
     }

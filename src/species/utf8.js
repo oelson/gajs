@@ -1,6 +1,5 @@
 const random = require("random");
 const { StringDecoder } = require("string_decoder");
-const { byte_string } = require("../ga/presentation");
 
 const Utf8Decoder = new StringDecoder("utf8");
 
@@ -82,11 +81,7 @@ function remove_random_letter(text) {
 function utf8_being(genotype) {
   const buffer = Buffer.from(genotype);
   const phenotype = Utf8Decoder.end(buffer);
-  return {
-    genotype,
-    phenotype,
-    genotype_byte_string: byte_string(genotype),
-  };
+  return { genotype, phenotype };
 }
 
 function utf8_target(phenotype) {
