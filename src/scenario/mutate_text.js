@@ -16,12 +16,7 @@ const {
   insert_random_byte,
   remove_random_byte,
 } = require("../ga/genome");
-const {
-  generate,
-  keep_best_percentile,
-  stop_when_survival_is_certain,
-  stop_at_maximum_rank,
-} = require("../ga/process");
+const { generate, keep_best_percentile } = require("../ga/process");
 
 function* mutate_text({
   initial_population,
@@ -30,6 +25,7 @@ function* mutate_text({
   survival_probability,
   target_text,
   maximum_rank,
+  stop,
 }) {
   const choices = {
     mutation: {
@@ -108,6 +104,14 @@ function* mutate_text({
         return offspring;
       },
     },
+    stop: {
+      stop_at_maximum_rank({ rank }) {
+        return rank > maximum_rank;
+      },
+      stop_when_survival_is_certain({ population }) {
+        return population.some((being) => survival_p_fn(being) === 1);
+      },
+    },
   };
 
   function hazard_each_being(population) {
@@ -130,14 +134,18 @@ function* mutate_text({
   const target = new Utf8Target(target_text.text);
   const survival_p_fn = choices.evaluation[survival_probability];
   const reproduction_fn = choices.reproduction[reproduction.function];
+  const success_fns = stop.success.map((success) => choices.stop[success]);
+  const failure_fns = stop.failure.map((failure) => choices.stop[failure]);
+  const success_fn = (g) => success_fns.some((f) => f(g) === true);
+  const failure_fn = (g) => failure_fns.some((f) => f(g) === true);
 
   const generations = generate({
     population: collect(initial_population_fn, initial_population.length),
     mutate: hazard_each_being,
     reproduce: reproduction_fn,
     select: select_by_survival_probability,
-    success_conditions: [stop_when_survival_is_certain(survival_p_fn)],
-    fail_conditions: [stop_at_maximum_rank(maximum_rank)],
+    success: success_fn,
+    failure: failure_fn,
   });
 
   for (const { rank, population } of generations) {

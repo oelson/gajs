@@ -36,6 +36,10 @@ const generations = mutate_text({
     function: "clone_each_being",
   },
   maximum_rank: 10000,
+  stop: {
+    success: ["stop_when_survival_is_certain"],
+    failure: ["stop_at_maximum_rank"],
+  },
 });
 
 for (const { rank, population_with_survival_p } of generations) {
