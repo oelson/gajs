@@ -16,7 +16,8 @@ const {
   insert_random_byte,
   remove_random_byte,
 } = require("../ga/genome");
-const { generate, select_best_percentile } = require("../ga/process");
+const { generate } = require("../ga/process");
+const { sortBy } = require("lodash");
 
 function mutate_text(conf) {
   const choices = {
@@ -72,11 +73,10 @@ function mutate_text(conf) {
     },
     selection: {
       keep_population_stable(population) {
-        return select_best_percentile(
-          population,
-          survival_p_fn,
-          1 - 1 / conf.reproduction.rate
-        );
+        const competition = sortBy(population, [(b) => b.survival_p]);
+        const percentile = 1 - 1 / conf.reproduction.rate;
+        const threshold = parseInt(population.length * percentile);
+        return competition.slice(threshold);
       },
     },
     population: {
@@ -97,6 +97,7 @@ function mutate_text(conf) {
       clone(being) {
         const genome_copy = being.genotype.slice();
         const clone = utf8_being(genome_copy);
+        clone.survival_p = survival_p_fn(clone);
         return clone;
       },
     },
@@ -125,6 +126,16 @@ function mutate_text(conf) {
   const success_fn = (g) => success_fns.some((f) => f(g) === true);
   const failure_fn = (g) => failure_fns.some((f) => f(g) === true);
 
+  function initial_population() {
+    const population = [];
+    for (let i = 0; i < conf.start.length; i++) {
+      const being = initial_population_fn();
+      being.survival_p = survival_p_fn(being);
+      population.push(being);
+    }
+    return population;
+  }
+
   function reproduce(population) {
     const offspring = [];
     for (const being of population) {
@@ -137,7 +148,7 @@ function mutate_text(conf) {
   }
 
   const generations = generate({
-    population: collect(initial_population_fn, conf.start.length),
+    population: initial_population(),
     mutate: (p) => p.forEach(hazard_fn),
     reproduce: reproduce,
     select: select_fn,
@@ -145,28 +156,7 @@ function mutate_text(conf) {
     failure: failure_fn,
   });
 
-  return yield_generations_with_survival_p(generations, survival_p_fn);
-}
-
-function collect(func, times) {
-  const l = [];
-  for (let i = 0; i < times; i++) {
-    const x = func();
-    l.push(x);
-  }
-  return l;
-}
-
-function* yield_generations_with_survival_p(generations, survival_p_fn) {
-  for (const { rank, population } of generations) {
-    const population_with_survival_p = [];
-    for (const being of population) {
-      const being_survival_p = survival_p_fn(being);
-      const pair = [being, being_survival_p];
-      population_with_survival_p.push(pair);
-    }
-    yield { rank, population_with_survival_p };
-  }
+  return generations;
 }
 
 module.exports = { mutate_text };
