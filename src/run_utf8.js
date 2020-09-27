@@ -1,40 +1,38 @@
 const { mutate_text } = require("./scenario/mutate_text");
-const { stdout } = require("process");
 const { relative_fixed } = require("./presentation");
 
 const generations = mutate_text({
+  target: {
+    alphabet: "abcdefghijklmnopqrstuvwxyz ",
+    text: "les zebres sont des animaux tres fragiles",
+  },
   start: {
     length: 100,
-    function: "random_fixed_length",
+    function: "random_variable_length",
   },
   reproduction: {
-    rate: 20,
+    rate: 10,
     function: "clone",
   },
   selection: {
     evaluation: "evaluate_phenotype",
     reduction: "keep_population_stable",
   },
-  target: {
-    alphabet: "abcdefghijklmnopqrstuvwxyz ",
-    text: "le cadavre",
-  },
   mutations: {
     functions: {
       insert_letter: 1,
       remove_letter: 1,
-      replace_letter: 10,
+      replace_letter: 2,
       insert_byte: 0,
       remove_byte: 0,
       replace_byte: 0,
       alter_byte: 0,
     },
-    maximum_per_cycle: 3,
+    number_per_cycle: 1,
   },
   stop: {
     rank: 10000,
-    success: ["stop_when_survival_is_certain"],
-    failure: ["stop_at_maximum_rank"],
+    survival_p: 0.97,
   },
 });
 
@@ -52,28 +50,27 @@ for (const { rank, population } of generations) {
 
 console.log("---- Genealogy ----");
 
-function* make_genealogy(final_being) {
-  const chain = [];
-  for (
-    let being = final_being;
-    being && being.ancestors[0];
-    being = being.ancestors[0]
-  ) {
-    chain.push(being);
-  }
+function* follow(element, next) {
+  do {
+    yield element;
+    element = next(element);
+  } while (element);
+}
 
-  yield { delta: undefined, being: chain[chain.length - 1] };
-  for (let i = chain.length - 1; i > 0; i--) {
-    const last = chain[i];
-    const previous = chain[i - 1];
-    const delta = previous.survival_p - last.survival_p;
-    yield { delta, being: previous };
+function* make_genealogy(final_being) {
+  const chain = Array.from(follow(final_being, (b) => b.ancestors[0]));
+  chain.reverse();
+
+  yield { delta: undefined, being: chain[0] };
+  for (let i = 0; i < chain.length - 1; i++) {
+    const current = chain[i];
+    const next = chain[i + 1];
+    const delta = next.survival_p - current.survival_p;
+    yield { delta, being: next };
   }
 }
 
-const genealogy = make_genealogy(final);
-
-for (const { delta, being } of genealogy) {
+for (const { delta, being } of make_genealogy(final)) {
   console.log(
     relative_fixed(delta, 2).padStart(5, " "),
     `(${being.survival_p.toFixed(2)})`,

@@ -1,7 +1,7 @@
 const random = require("random");
 const { select } = require("weighted");
 
-function hazard(mutation_index, mutation_names_and_weights, maximum_per_cycle) {
+function hazard(mutation_index, mutation_names_and_weights, number_per_cycle) {
   const mutations = [];
   const weights = [];
 
@@ -12,8 +12,7 @@ function hazard(mutation_index, mutation_names_and_weights, maximum_per_cycle) {
   }
 
   return function (being) {
-    const times = random.int(1, maximum_per_cycle);
-    for (let i = 1; i <= times; i++) {
+    for (let i = 1; i <= number_per_cycle; i++) {
       const mutate = select(mutations, weights);
       mutate(being);
     }

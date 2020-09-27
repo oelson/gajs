@@ -100,30 +100,26 @@ function mutate_text(conf) {
         return utf8_being(genome_copy);
       },
     },
-    stop: {
-      stop_at_maximum_rank({ rank }) {
-        return rank > conf.stop.rank;
-      },
-      stop_when_survival_is_certain({ population }) {
-        return population.some((being) => being.survival_p === 1);
-      },
-    },
   };
 
   const hazard_fn = hazard(
     choices.mutation,
     conf.mutations.functions,
-    conf.mutations.maximum_per_cycle
+    conf.mutations.number_per_cycle
   );
   const initial_population_fn = choices.population[conf.start.function];
   const target_b = utf8_target(conf.target.text);
   const survival_p_fn = choices.evaluation[conf.selection.evaluation];
   const select_fn = choices.selection[conf.selection.reduction];
   const reproduction_fn = choices.reproduction[conf.reproduction.function];
-  const success_fns = conf.stop.success.map((success) => choices.stop[success]);
-  const failure_fns = conf.stop.failure.map((failure) => choices.stop[failure]);
-  const success_fn = (g) => success_fns.some((f) => f(g) === true);
-  const failure_fn = (g) => failure_fns.some((f) => f(g) === true);
+
+  function success({ population }) {
+    return population.some((being) => being.survival_p >= conf.stop.survival_p);
+  }
+
+  function failure({ rank }) {
+    return rank > conf.stop.rank;
+  }
 
   function label(being, ancestors) {
     being.survival_p = survival_p_fn(being);
@@ -158,8 +154,8 @@ function mutate_text(conf) {
     mutate: (p) => p.forEach(hazard_fn),
     reproduce: reproduce,
     select: select_fn,
-    success: success_fn,
-    failure: failure_fn,
+    success,
+    failure,
   });
 
   return generations;
