@@ -27,8 +27,23 @@ function byte_string(byteArray) {
   return String.fromCharCode.apply(null, chars);
 }
 
+function relative_fixed(number, length) {
+  if (number === undefined || number === null || isNaN(number)) {
+    return "";
+  }
+  let s = number.toFixed(length);
+  if (number === 0) {
+    return " " + s;
+  } else if (number > 0) {
+    return "+" + s;
+  } else {
+    return s;
+  }
+}
+
 module.exports = {
   integer_to_base,
   binary_string,
   byte_string,
+  relative_fixed,
 };

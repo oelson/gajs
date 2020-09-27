@@ -1,5 +1,6 @@
 const { mutate_text } = require("./scenario/mutate_text");
 const { stdout } = require("process");
+const { relative_fixed } = require("./presentation");
 
 const generations = mutate_text({
   start: {
@@ -16,7 +17,7 @@ const generations = mutate_text({
   },
   target: {
     alphabet: "abcdefghijklmnopqrstuvwxyz ",
-    text: "le cadavre exquis boira le vin nouveau",
+    text: "le cadavre",
   },
   mutations: {
     functions: {
@@ -37,37 +38,45 @@ const generations = mutate_text({
   },
 });
 
+console.log("---- Evolution ----");
 let final;
 for (const { rank, population } of generations) {
   const best = population[population.length - 1];
   const worst = population[0];
   const best_survival = best.survival_p.toFixed(2);
   const worst_survival = worst.survival_p.toFixed(2);
-  const summary = `[${rank}] s:${population.length} f:${best_survival}-${worst_survival} b:"${best.phenotype}" (0x${best.genotype_byte_string})`;
-  stdout.write("\r");
-  stdout.write(summary);
+  const summary = `[${rank}] s:${population.length} p:${best_survival}-${worst_survival} b:"${best.phenotype}" (0x${best.genotype_byte_string})`;
+  console.log(summary);
   final = best;
 }
 
-stdout.write("\n");
+console.log("---- Genealogy ----");
 
-const chain = [];
-for (
-  let being = final;
-  being && being.ancestors[0];
-  being = being.ancestors[0]
-) {
-  chain.push(being);
+function* make_genealogy(final_being) {
+  const chain = [];
+  for (
+    let being = final_being;
+    being && being.ancestors[0];
+    being = being.ancestors[0]
+  ) {
+    chain.push(being);
+  }
+
+  yield { delta: undefined, being: chain[chain.length - 1] };
+  for (let i = chain.length - 1; i > 0; i--) {
+    const last = chain[i];
+    const previous = chain[i - 1];
+    const delta = previous.survival_p - last.survival_p;
+    yield { delta, being: previous };
+  }
 }
-chain.reverse();
 
-console.log(chain[0].phenotype);
-for (let i = 0; i < chain.length - 1; i++) {
-  const j = i + 1;
-  const f = chain[i];
-  const s = chain[j];
-  const d_p = s.survival_p - f.survival_p;
-  let d = d_p.toFixed(2);
-  if (d[0] !== "-") d = "+" + d;
-  console.log(s.phenotype, d, `(${s.survival_p.toFixed(2)})`);
+const genealogy = make_genealogy(final);
+
+for (const { delta, being } of genealogy) {
+  console.log(
+    relative_fixed(delta, 2).padStart(5, " "),
+    `(${being.survival_p.toFixed(2)})`,
+    `"${being.phenotype}"`
+  );
 }

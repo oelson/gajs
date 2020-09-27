@@ -18,7 +18,7 @@ const {
 } = require("../ga/genome");
 const { generate } = require("../ga/process");
 const { sortBy } = require("lodash");
-const { byte_string } = require("../ga/presentation");
+const { byte_string } = require("../presentation");
 
 function mutate_text(conf) {
   const choices = {
