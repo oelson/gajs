@@ -1,4 +1,3 @@
-const random = require("random");
 const { select } = require("weighted");
 
 function hazard(mutation_index, mutation_names_and_weights, number_per_cycle) {
