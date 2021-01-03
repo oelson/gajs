@@ -15,7 +15,7 @@ const {
   replace_random_byte,
   insert_random_byte,
   remove_random_byte,
-} = require("../ga/genome");
+} = require("../ga/bytes");
 const { generate } = require("../ga/process");
 const { sortBy } = require("lodash");
 const { byte_string } = require("../presentation");

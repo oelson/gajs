@@ -35,13 +35,13 @@ function replace_random_byte(bytes) {
   bytes[byte_index] = new_byte;
 }
 
-function random_genome(length) {
-  const genome = [];
+function random_bytes(length) {
+  const bytes = [];
   for (let i = 0; i < length; ++i) {
     const random_byte = random.int(0x00, 0xff);
-    genome.push(random_byte);
+    bytes.push(random_byte);
   }
-  return genome;
+  return bytes;
 }
 
 module.exports = {
@@ -49,5 +49,5 @@ module.exports = {
   replace_random_byte,
   insert_random_byte,
   remove_random_byte,
-  random_genome,
+  random_bytes,
 };
