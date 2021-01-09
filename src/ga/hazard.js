@@ -10,7 +10,7 @@ function hazard(mutation_index, mutation_names_and_weights, number_per_cycle) {
     weights.push(weight);
   }
 
-  return function (being) {
+  return function(being) {
     for (let i = 1; i <= number_per_cycle; i++) {
       const mutate = select(mutations, weights);
       mutate(being);

@@ -118,5 +118,5 @@ module.exports = {
   insert_random_letter,
   remove_random_letter,
   random_text_being_of_random_length,
-  random_text_being_of_fixed_length,
+  random_text_being_of_fixed_length
 };

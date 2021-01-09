@@ -4,19 +4,19 @@ const { relative_fixed } = require("./presentation");
 const generations = mutate_text({
   target: {
     alphabet: "abcdefghijklmnopqrstuvwxyz ",
-    text: "les zebres sont des animaux tres fragiles",
+    text: "les zebres sont des animaux tres fragiles"
   },
   start: {
     length: 100,
-    function: "random_variable_length",
+    function: "random_variable_length"
   },
   reproduction: {
     rate: 10,
-    function: "clone",
+    function: "clone"
   },
   selection: {
     evaluation: "evaluate_phenotype",
-    reduction: "keep_population_stable",
+    reduction: "keep_population_stable"
   },
   mutations: {
     functions: {
@@ -26,14 +26,14 @@ const generations = mutate_text({
       insert_byte: 0,
       remove_byte: 0,
       replace_byte: 0,
-      alter_byte: 0,
+      alter_byte: 0
     },
-    number_per_cycle: 1,
+    number_per_cycle: 1
   },
   stop: {
     rank: 10000,
-    survival_p: 0.97,
-  },
+    survival_p: 0.97
+  }
 });
 
 console.log("---- Evolution ----");
@@ -58,7 +58,7 @@ function* follow(element, next) {
 }
 
 function* make_genealogy(final_being) {
-  const chain = Array.from(follow(final_being, (b) => b.ancestors[0]));
+  const chain = Array.from(follow(final_being, b => b.ancestors[0]));
   chain.reverse();
 
   yield { delta: undefined, being: chain[0] };

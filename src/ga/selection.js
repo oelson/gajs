@@ -35,7 +35,7 @@ function byte_vector_distance(a, b) {
 }
 
 function integer_vector_to_binary(vector, binaryLength) {
-  const binary_vector = vector.map(function (int) {
+  const binary_vector = vector.map(function(int) {
     const binary = int.toString(2);
     const padded = binary.padStart(binaryLength, "0");
     const truncated = padded.substring(0, binaryLength);
@@ -48,5 +48,5 @@ module.exports = {
   str_distance,
   vector_distance,
   integer_binary_distance,
-  byte_vector_distance,
+  byte_vector_distance
 };

@@ -49,5 +49,5 @@ module.exports = {
   replace_random_byte,
   insert_random_byte,
   remove_random_byte,
-  random_bytes,
+  random_bytes
 };
