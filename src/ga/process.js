@@ -11,12 +11,12 @@ function* generate({
     population.length > 0 && !failure({ rank, population });
     rank++
   ) {
-    yield { rank, population };
-    if (success({ rank, population })) break;
-    mutate(population);
-    const new_population = reproduce(population);
-    population = select(new_population);
+    yield { rank, population }
+    if (success({ rank, population })) break
+    mutate(population)
+    const new_population = reproduce(population)
+    population = select(new_population)
   }
 }
 
-module.exports = { generate };
+module.exports = { generate }
