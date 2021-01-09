@@ -3,7 +3,6 @@
     <div id="nav">
       <router-link to="/">Accueil</router-link> |
       <router-link to="/text">Texte</router-link>
-      <router-link to="/image">Image</router-link>
     </div>
     <router-view />
   </div>
