@@ -2,6 +2,11 @@
   "name": "gajs",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oelson/ga.git"
+  },
+  "author": "Houillon Nelson",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -10,8 +15,12 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "fastest-levenshtein": "^1.0.12",
+    "lodash": "^4.17.20",
+    "random": "^2.2.0",
     "vue": "^2.6.11",
-    "vue-router": "^3.2.0"
+    "vue-router": "^3.2.0",
+    "weighted": "^0.3.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.0",
