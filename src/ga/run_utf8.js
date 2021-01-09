@@ -49,97 +49,38 @@ function encode_utf8(s) {
   return bytes.slice(0, i)
 }
 
-function replace_letter(text, replacement_index, alphabet, alphabet_index) {
-  const letters = text.split("")
-  const new_letter = alphabet[alphabet_index]
-  letters[replacement_index] = new_letter
-  const new_text = letters.join("")
-  return new_text
-}
-
-function replace_random_letter(text, alphabet) {
-  const replacement_index = random.int(0, text.length - 1)
-  const alphabet_index = random.int(0, alphabet.length - 1)
-  return replace_letter(text, replacement_index, alphabet, alphabet_index)
-}
-
-function insert_letter(text, insertion_index, alphabet, alphabet_index) {
-  const letters = text.split("")
-  const new_letter = alphabet[alphabet_index]
-  letters.splice(insertion_index, 0, new_letter)
-  const new_text = letters.join("")
-  return new_text
-}
-
-function insert_random_letter(text, alphabet) {
-  const insertion_index = random.int(0, text.length - 1)
-  const alphabet_index = random.int(0, alphabet.length - 1)
-  return insert_letter(text, insertion_index, alphabet, alphabet_index)
-}
-
-function remove_letter(text, removal_index) {
-  const letters = text.split("")
-  letters.splice(removal_index, 1)
-  const new_text = letters.join("")
-  return new_text
-}
-
-function remove_random_letter(text) {
-  const removal_index = random.int(0, text.length - 1)
-  return remove_letter(text, removal_index)
-}
-
 function utf8_being(genotype) {
   const buffer = Buffer.from(genotype)
   const phenotype = Utf8Decoder.end(buffer)
   return { genotype, phenotype }
 }
 
-function utf8_target(phenotype) {
-  const genotype = encode_utf8(phenotype)
-  return utf8_being(genotype)
-}
-
-function random_text_being_of_random_length(alphabet, max_length) {
-  const length = random.int(0, max_length)
-  return random_text_being_of_fixed_length(alphabet, length)
-}
-
-function random_text_being_of_fixed_length(alphabet, length) {
-  const phenotype = random_text(length, alphabet)
-  const genotype = encode_utf8(phenotype)
-  return utf8_being(genotype)
-}
-
-function random_text(length, alphabet) {
-  let chars = []
-  for (var i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * alphabet.length)
-    const randomChar = alphabet.charAt(randomIndex)
-    chars.push(randomChar)
-  }
-  return chars.join("")
-}
-
 function mutate_text(conf) {
   const choices = {
     mutation: {
       insert_letter(being) {
-        const new_phenotype = insert_random_letter(
-          being.phenotype,
-          conf.target.alphabet
-        )
+        const insertion_index = random.int(0, being.phenotype.length - 1)
+        const alphabet_index = random.int(0, conf.target.alphabet.length - 1)
+        const letters = being.phenotype.split("")
+        const new_letter = conf.target.alphabet[alphabet_index]
+        letters.splice(insertion_index, 0, new_letter)
+        const new_phenotype = letters.join("")
         being.genotype = encode_utf8(new_phenotype)
       },
       remove_letter(being) {
-        const new_phenotype = remove_random_letter(being.phenotype)
+        const removal_index = random.int(0, being.phenotype.length - 1)
+        const letters = being.phenotype.split("")
+        letters.splice(removal_index, 1)
+        const new_phenotype = letters.join("")
         being.genotype = encode_utf8(new_phenotype)
       },
       replace_letter(being) {
-        const new_phenotype = replace_random_letter(
-          being.phenotype,
-          conf.target.alphabet
-        )
+        const replacement_index = random.int(0, being.phenotype.length - 1)
+        const alphabet_index = random.int(0, conf.target.alphabet.length - 1)
+        const letters = being.phenotype.split("")
+        const new_letter = conf.target.alphabet[alphabet_index]
+        letters[replacement_index] = new_letter
+        const new_phenotype = letters.join("")
         being.genotype = encode_utf8(new_phenotype)
       },
       insert_byte(being) {
@@ -180,16 +121,17 @@ function mutate_text(conf) {
     },
     population: {
       random_fixed_length() {
-        return random_text_being_of_fixed_length(
-          conf.target.alphabet,
-          target_b.phenotype.length
-        )
-      },
-      random_variable_length() {
-        return random_text_being_of_random_length(
-          conf.target.alphabet,
-          target_b.phenotype.length
-        )
+        let chars = []
+        for (var i = 0; i < target_b.phenotype.length; i++) {
+          const randomIndex = Math.floor(
+            Math.random() * conf.target.alphabet.length
+          )
+          const randomChar = conf.target.alphabet.charAt(randomIndex)
+          chars.push(randomChar)
+        }
+        const phenotype = chars.join("")
+        const genotype = encode_utf8(phenotype)
+        return utf8_being(genotype)
       }
     },
     reproduction: {
@@ -206,7 +148,7 @@ function mutate_text(conf) {
     conf.mutations.number_per_cycle
   )
   const initial_population_fn = choices.population[conf.start.function]
-  const target_b = utf8_target(conf.target.text)
+  const target_b = utf8_being(encode_utf8(conf.target.text))
   const survival_p_fn = choices.evaluation[conf.selection.evaluation]
   const select_fn = choices.selection[conf.selection.reduction]
   const reproduction_fn = choices.reproduction[conf.reproduction.function]
@@ -266,7 +208,7 @@ const generations = mutate_text({
   },
   start: {
     length: 100,
-    function: "random_variable_length"
+    function: "random_fixed_length"
   },
   reproduction: {
     rate: 10,
