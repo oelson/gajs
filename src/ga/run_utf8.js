@@ -1,13 +1,12 @@
 const { relative_fixed, byte_string } = require("./presentation")
 const { distance: levenshtein } = require("fastest-levenshtein")
-const { hazard } = require("./hazard")
 const {
   flip_random_bit_in_random_byte,
   replace_random_byte,
   insert_random_byte,
   remove_random_byte
 } = require("./bytes")
-const { generate } = require("./process")
+const { generate, hazard } = require("./process")
 const { sortBy } = require("lodash")
 const random = require("random")
 const { StringDecoder } = require("string_decoder")
