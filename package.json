@@ -9,6 +9,7 @@
   "author": "Houillon Nelson",
   "scripts": {
     "serve": "vue-cli-service serve",
+    "build:worker": "vue-cli-service build --dest public/worker --no-clean --target lib --formats umd-min --name mutate_text.wk src/mutate_text.wk.js",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"
@@ -38,6 +39,8 @@
     "vue-template-compiler": "^2.6.11"
   },
   "prettier": {
-    "semi": false
+    "semi": false,
+    "trailingComma": "es5",
+    "arrowParens": "always"
   }
 }
