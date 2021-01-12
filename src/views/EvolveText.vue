@@ -38,19 +38,22 @@
         <tr>
           <th>Rang</th>
           <th>Population</th>
-          <th>Survie</th>
-          <th class="phenotype">Meilleur</th>
+          <th>Meilleure p.</th>
+          <th>Pire p.</th>
+          <th class="phenotype">Meilleur être</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>{{ latest.rank }}</td>
           <td>{{ latest.population_length }}</td>
-          <td>
-            {{ formatSurvivalP(latest.best.survival_p) }} -
+          <td class="probability">
+            {{ formatSurvivalP(latest.best.survival_p) }}
+          </td>
+          <td class="probability">
             {{ formatSurvivalP(latest.worst.survival_p) }}
           </td>
-          <td>{{ latest.best.phenotype }}</td>
+          <td class="phenotype">{{ latest.best.phenotype }}</td>
         </tr>
       </tbody>
     </table>
@@ -163,8 +166,12 @@ export default {
   .summary {
     font-family: monospace;
 
-    .phenotype {
+    th.phenotype {
       text-align: left;
+    }
+
+    td.phenotype {
+      white-space: nowrap;
     }
   }
 }
