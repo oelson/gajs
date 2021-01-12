@@ -6,6 +6,7 @@ onmessage = function(e) {
     const best = population[population.length - 1]
     const worst = population[0]
     const population_length = population.length
-    postMessage({ rank, best, worst, population_length })
+    postMessage({ rank, best, worst, population_length, end: false })
   }
+  postMessage({ end: true })
 }

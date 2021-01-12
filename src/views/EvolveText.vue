@@ -24,20 +24,36 @@
           :readonly="worker !== undefined"
         />
       </label>
+
+      <label></label>
     </div>
+
     <button ref="go" @click="toggle">
       <template v-if="worker !== undefined">Stop</template>
       <template v-else>Go</template>
     </button>
 
-    <span>
-      [{{ latest.rank }}] s:{{ latest.population_length }} p:{{
-        latest.best_survival
-      }}
-      -
-      {{ latest.worst_survival }}
-      b:"{{ latest.best.phenotype }}" (0x{{ latest.best.genotype_byte_string }})
-    </span>
+    <table class="summary">
+      <thead>
+        <tr>
+          <th>Rang</th>
+          <th>Population</th>
+          <th>Survie</th>
+          <th class="phenotype">Meilleur</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ latest.rank }}</td>
+          <td>{{ latest.population_length }}</td>
+          <td>
+            {{ formatSurvivalP(latest.best.survival_p) }} -
+            {{ formatSurvivalP(latest.worst.survival_p) }}
+          </td>
+          <td>{{ latest.best.phenotype }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -93,14 +109,34 @@ export default {
   methods: {
     toggle() {
       if (this.worker !== undefined) {
-        this.worker.terminate()
-        this.worker = undefined
+        this.stop()
       } else {
         this.worker = new Worker("/worker/mutate_text.wk.umd.min.js")
-        this.worker.onmessage = (e) => {
-          this.latest = e.data
-        }
+        this.worker.onmessage = (e) => this.receive(e.data)
         this.worker.postMessage(this.conf)
+      }
+    },
+
+    receive({ rank, best, worst, population_length, end }) {
+      if (end) {
+        this.stop()
+      } else {
+        this.latest = { rank, best, worst, population_length }
+      }
+    },
+
+    stop() {
+      if (this.worker !== undefined) {
+        this.worker.terminate()
+        this.worker = undefined
+      }
+    },
+
+    formatSurvivalP(p) {
+      if (p === null || p === undefined) {
+        return ""
+      } else {
+        return p.toFixed(2)
       }
     },
   },
@@ -112,17 +148,24 @@ export default {
   display: flex;
   flex-flow: column nowrap;
   justify-content: space-around;
-  align-items: center;
 
   .conf-group {
     display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+    align-items: center;
+
+    label {
+      margin: 0.5em;
+    }
   }
 
-  .text {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    box-sizing: border-box;
+  .summary {
+    font-family: monospace;
+
+    .phenotype {
+      text-align: left;
+    }
   }
 }
 </style>
