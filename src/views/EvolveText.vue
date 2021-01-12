@@ -1,13 +1,30 @@
 <template>
   <div class="evolve">
-    <input
-      ref="tg"
-      type="text"
-      placeholder="Texte cible"
-      class="text"
-      v-model="conf.target.text"
-      :readonly="worker !== undefined"
-    />
+    <div class="conf-group">
+      <label>
+        Alphabet
+        <select v-model="conf.target.alphabet">
+          <option value="abcdefghijklmnopqrstuvwxyz ">[a-z ]</option>
+          <option value="abcdefghijklmnopqrstuvwxyz0123456789 ">
+            [a-z0-9 ]
+          </option>
+          <option
+            value="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
+          >
+            [a-zA-Z0-9 ]
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Texte
+        <input
+          type="text"
+          v-model="conf.target.text"
+          :readonly="worker !== undefined"
+        />
+      </label>
+    </div>
     <button ref="go" @click="toggle">
       <template v-if="worker !== undefined">Stop</template>
       <template v-else>Go</template>
@@ -43,7 +60,7 @@ export default {
           function: "clone",
         },
         selection: {
-          evaluation: "evaluate_phenotype",
+          evaluation: "text_distance",
           reduction: "keep_population_stable",
         },
         mutations: {
@@ -96,6 +113,10 @@ export default {
   flex-flow: column nowrap;
   justify-content: space-around;
   align-items: center;
+
+  .conf-group {
+    display: flex;
+  }
 
   .text {
     width: 100%;

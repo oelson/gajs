@@ -4,7 +4,7 @@ const {
   flip_random_bit_in_random_byte,
   replace_random_byte,
   insert_random_byte,
-  remove_random_byte
+  remove_random_byte,
 } = require("./bytes")
 const { generate, hazard } = require("./process")
 const { sortBy } = require("lodash")
@@ -93,30 +93,30 @@ function mutate_text(conf) {
       },
       alter_byte(being) {
         flip_random_bit_in_random_byte(being.genotype)
-      }
+      },
     },
     evaluation: {
-      evaluate_phenotype(being) {
+      text_distance(being) {
         const score = levenshtein(being.phenotype, target_b.phenotype)
         const death_probability = score / target_b.phenotype.length
         return 1 - death_probability
       },
-      evaluate_genotype(being) {
+      bytes_distance(being) {
         // workaround...
         const being_genotype_string = being.genotype_byte_string
         const target_genotype_string = target_b.genotype_byte_string
         const score = levenshtein(being_genotype_string, target_genotype_string)
         const death_probability = score / target_genotype_string.length
         return 1 - death_probability
-      }
+      },
     },
     selection: {
       keep_population_stable(population) {
-        const competition = sortBy(population, [b => b.survival_p])
+        const competition = sortBy(population, [(b) => b.survival_p])
         const percentile = 1 - 1 / conf.reproduction.rate
         const threshold = parseInt(population.length * percentile)
         return competition.slice(threshold)
-      }
+      },
     },
     population: {
       random_fixed_length() {
@@ -131,14 +131,14 @@ function mutate_text(conf) {
         const phenotype = chars.join("")
         const genotype = encode_utf8(phenotype)
         return utf8_being(genotype)
-      }
+      },
     },
     reproduction: {
       clone(being) {
         const genome_copy = being.genotype.slice()
         return utf8_being(genome_copy)
-      }
-    }
+      },
+    },
   }
 
   const hazard_fn = hazard(
@@ -153,7 +153,7 @@ function mutate_text(conf) {
   const reproduction_fn = choices.reproduction[conf.reproduction.function]
 
   function success({ population }) {
-    return population.some(being => being.survival_p >= conf.stop.survival_p)
+    return population.some((being) => being.survival_p >= conf.stop.survival_p)
   }
 
   function failure({ rank }) {
@@ -190,11 +190,11 @@ function mutate_text(conf) {
 
   const generations = generate({
     population: initial_population(),
-    mutate: p => p.forEach(hazard_fn),
+    mutate: (p) => p.forEach(hazard_fn),
     reproduce: reproduce,
     select: select_fn,
     success,
-    failure
+    failure,
   })
 
   return generations
