@@ -79,7 +79,7 @@ export default {
         this.worker.terminate()
         this.worker = undefined
       } else {
-        this.worker = new Worker("/mutate_text.wk.umd.min.js")
+        this.worker = new Worker("/worker/mutate_text.wk.umd.min.js")
         this.worker.onmessage = (e) => {
           this.latest = e.data
         }
