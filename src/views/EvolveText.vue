@@ -114,17 +114,22 @@ export default {
       if (this.worker !== undefined) {
         this.stop()
       } else {
-        this.worker = new Worker("/worker/mutate_text.wk.umd.min.js")
-        this.worker.onmessage = (e) => this.receive(e.data)
-        this.worker.postMessage(this.conf)
+        this.run()
       }
     },
 
-    receive({ rank, best, worst, population_length, end }) {
-      if (end) {
+    run() {
+      this.worker = new Worker("/worker/mutate_text.wk.umd.min.js")
+      this.worker.onmessage = this.receive
+      this.worker.postMessage(this.conf)
+    },
+
+    receive(e) {
+      const latest = e.data
+      if (latest === null) {
         this.stop()
       } else {
-        this.latest = { rank, best, worst, population_length }
+        this.latest = latest
       }
     },
 
@@ -148,21 +153,6 @@ export default {
 
 <style lang="less" scoped>
 .evolve {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: space-around;
-
-  .conf-group {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-around;
-    align-items: center;
-
-    label {
-      margin: 0.5em;
-    }
-  }
-
   .summary {
     font-family: monospace;
 
