@@ -57,18 +57,31 @@
         </tr>
       </tbody>
     </table>
+
+    <apexcharts
+      ref="chart"
+      width="500"
+      type="line"
+      :options="chartOptions"
+      :series="series"
+    />
   </div>
 </template>
 
 <script>
+import VueApexCharts from "vue-apexcharts"
+
 export default {
   name: "EvolveText",
+  components: {
+    apexcharts: VueApexCharts,
+  },
   data() {
     return {
       conf: {
         target: {
           alphabet: "abcdefghijklmnopqrstuvwxyz ",
-          text: "les zebres sont des animaux tres fragiles",
+          text: "les zebres sont cool",
         },
         start: {
           length: 100,
@@ -100,12 +113,50 @@ export default {
         },
       },
       worker: undefined,
+      refreshInterval: undefined,
       latest: {
         rank: 0,
         population_length: 0,
         best: "",
         worst: "",
       },
+      chartOptions: {
+        xaxis: {
+          type: "numeric",
+        },
+        yaxis: {
+          min: 0,
+          max: 1,
+          tickAmount: 10,
+          labels: {
+            formatter: this.formatSurvivalP,
+          },
+        },
+        stroke: {
+          curve: "smooth",
+          width: 2,
+        },
+        chart: {
+          animations: {
+            enabled: false,
+          },
+        },
+        grid: {
+          borderColor: "#ccc",
+          strokeDashArray: 2,
+          yaxis: {
+            lines: {
+              show: true,
+            },
+          },
+        },
+      },
+      series: [
+        {
+          name: "survival probability",
+          data: [],
+        },
+      ],
     }
   },
 
@@ -119,9 +170,17 @@ export default {
     },
 
     run() {
+      this.series[0].data = []
+      this.latest = {
+        rank: 0,
+        population_length: 0,
+        best: "",
+        worst: "",
+      }
       this.worker = new Worker("/worker/mutate_text.wk.umd.min.js")
       this.worker.onmessage = this.receive
       this.worker.postMessage(this.conf)
+      this.refreshInterval = setInterval(this.$refs.chart.refresh, 100)
     },
 
     receive(e) {
@@ -130,6 +189,7 @@ export default {
         this.stop()
       } else {
         this.latest = latest
+        this.series[0].data.push(latest.best.survival_p)
       }
     },
 
@@ -137,6 +197,11 @@ export default {
       if (this.worker !== undefined) {
         this.worker.terminate()
         this.worker = undefined
+      }
+      if (this.refreshInterval !== undefined) {
+        clearInterval(this.refreshInterval)
+        this.refreshInterval = undefined
+        this.$refs.chart.refresh()
       }
     },
 
