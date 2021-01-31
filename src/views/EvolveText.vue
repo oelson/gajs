@@ -58,24 +58,15 @@
       </tbody>
     </table>
 
-    <apexcharts
-      ref="chart"
-      width="500"
-      type="line"
-      :options="chartOptions"
-      :series="series"
-    />
+    <canvas ref="chart" />
   </div>
 </template>
 
 <script>
-import VueApexCharts from "vue-apexcharts"
+import Chart from "chart.js"
 
 export default {
   name: "EvolveText",
-  components: {
-    apexcharts: VueApexCharts,
-  },
   data() {
     return {
       conf: {
@@ -120,43 +111,63 @@ export default {
         best: "",
         worst: "",
       },
-      chartOptions: {
-        xaxis: {
-          type: "numeric",
-        },
-        yaxis: {
-          min: 0,
-          max: 1,
-          tickAmount: 10,
-          labels: {
-            formatter: this.formatSurvivalP,
-          },
-        },
-        stroke: {
-          curve: "smooth",
-          width: 2,
-        },
-        chart: {
-          animations: {
-            enabled: false,
-          },
-        },
-        grid: {
-          borderColor: "#ccc",
-          strokeDashArray: 2,
-          yaxis: {
-            lines: {
-              show: true,
+      chartBuffer: [],
+      chart: undefined,
+      chartConfig: {
+        type: "line",
+        data: {
+          datasets: [
+            {
+              label: "Survival",
+              data: [],
+              borderColor: "#3e95cd",
+              fill: false,
+              borderWidth: 2,
             },
+          ],
+        },
+        options: {
+          animation: {
+            duration: 0,
+          },
+          hover: {
+            animationDuration: 0,
+            intersect: false,
+          },
+          responsiveAnimationDuration: 0,
+          elements: {
+            point: {
+              radius: 0,
+            },
+            line: {
+              tension: 0, // disables bezier curves
+            },
+          },
+          tooltips: {
+            mode: "nearest",
+            axis: "x",
+            callbacks: {
+              beforeTitle: () => "Rank: ",
+              label: (tooltipItem) => this.formatSurvivalP(tooltipItem.yLabel),
+            },
+          },
+          scales: {
+            xAxes: [
+              {
+                type: "linear",
+              },
+            ],
+            yAxes: [
+              {
+                ticks: {
+                  min: 0,
+                  max: 1,
+                },
+              },
+            ],
           },
         },
       },
-      series: [
-        {
-          name: "survival probability",
-          data: [],
-        },
-      ],
     }
   },
 
@@ -170,7 +181,8 @@ export default {
     },
 
     run() {
-      this.series[0].data = []
+      this.chartConfig.data.datasets[0].data = []
+      this.chartBuffer = []
       this.latest = {
         rank: 0,
         population_length: 0,
@@ -180,7 +192,15 @@ export default {
       this.worker = new Worker("/worker/mutate_text.wk.umd.min.js")
       this.worker.onmessage = this.receive
       this.worker.postMessage(this.conf)
-      this.refreshInterval = setInterval(this.$refs.chart.refresh, 100)
+      this.refreshInterval = setInterval(this.renderChart, 200)
+    },
+
+    renderChart() {
+      let f
+      while ((f = this.chartBuffer.shift()) !== undefined) {
+        this.chartConfig.data.datasets[0].data.push(f)
+      }
+      this.chart.update()
     },
 
     receive(e) {
@@ -189,7 +209,7 @@ export default {
         this.stop()
       } else {
         this.latest = latest
-        this.series[0].data.push(latest.best.survival_p)
+        this.chartBuffer.push({ x: latest.rank, y: latest.best.survival_p })
       }
     },
 
@@ -201,7 +221,7 @@ export default {
       if (this.refreshInterval !== undefined) {
         clearInterval(this.refreshInterval)
         this.refreshInterval = undefined
-        this.$refs.chart.refresh()
+        this.renderChart()
       }
     },
 
@@ -212,6 +232,17 @@ export default {
         return p.toFixed(2)
       }
     },
+  },
+
+  mounted() {
+    this.chart = new Chart(this.$refs.chart, this.chartConfig)
+  },
+
+  beforeDestroy() {
+    if (this.chart !== undefined) {
+      this.chart.destroy()
+      this.chart = undefined
+    }
   },
 }
 </script>
@@ -228,6 +259,11 @@ export default {
     td.phenotype {
       white-space: nowrap;
     }
+  }
+
+  canvas {
+    max-width: 600px;
+    max-height: 400px;
   }
 }
 </style>
