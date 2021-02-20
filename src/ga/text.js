@@ -141,6 +141,21 @@ function mutate_text(conf) {
         const genome_copy = being.genotype.slice()
         return utf8_being(genome_copy)
       },
+      couple(being, population) {
+        let mate = null
+        for (let i = 0; i < 10 && (mate === null || mate === being); ++i) {
+          const mi = random.int(0, population.length - 1)
+          mate = population[mi]
+        }
+        const fold_at = random.int(0, being.genotype.length)
+        const recombined_genome = []
+        for (let fi = 0; fi < being.genotype.length; fi++) {
+          const genitor = fi <= fold_at ? being : mate
+          const byte = genitor.genotype[fi]
+          recombined_genome.push(byte)
+        }
+        return utf8_being(recombined_genome)
+      },
     },
   }
 
@@ -182,7 +197,7 @@ function mutate_text(conf) {
     const offspring = []
     for (const parent of population) {
       for (let i = 0; i < conf.reproduction.rate; i++) {
-        const child = reproduction_fn(parent)
+        const child = reproduction_fn(parent, population)
         label(child)
         offspring.push(child)
       }

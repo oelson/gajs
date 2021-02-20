@@ -32,6 +32,13 @@
         </select>
       </label>
       <label>
+        Reproduction
+        <select v-model="conf.reproduction.function">
+          <option value="clone">Clone</option>
+          <option value="couple">Couple</option>
+        </select>
+      </label>
+      <label>
         Initial population
         <input
           type="number"
