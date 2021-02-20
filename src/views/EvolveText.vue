@@ -24,9 +24,74 @@
           :readonly="worker !== undefined"
         />
       </label>
-
-      <label></label>
     </div>
+    <h1>Mutations</h1>
+    <table class="conf-group">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Insert</th>
+          <th>Remove</th>
+          <th>Change</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Letter</th>
+          <td>
+            <input
+              type="number"
+              min="0"
+              v-model.number="conf.mutations.functions.insert_letter"
+              size="2"
+            />
+          </td>
+          <td>
+            <input
+              type="number"
+              min="0"
+              v-model.number="conf.mutations.functions.remove_letter"
+              size="2"
+            />
+          </td>
+          <td>
+            <input
+              type="number"
+              min="0"
+              v-model.number="conf.mutations.functions.replace_letter"
+              size="2"
+            />
+          </td>
+        </tr>
+        <tr>
+          <th>Byte</th>
+          <td>
+            <input
+              type="number"
+              min="0"
+              v-model.number="conf.mutations.functions.insert_byte"
+              size="2"
+            />
+          </td>
+          <td>
+            <input
+              type="number"
+              min="0"
+              v-model.number="conf.mutations.functions.remove_byte"
+              size="2"
+            />
+          </td>
+          <td>
+            <input
+              type="number"
+              min="0"
+              v-model.number="conf.mutations.functions.replace_byte"
+              size="2"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
     <button ref="go" @click="toggle">
       <template v-if="worker !== undefined">Stop</template>
@@ -90,11 +155,10 @@ export default {
           functions: {
             insert_letter: 1,
             remove_letter: 1,
-            replace_letter: 2,
-            insert_byte: 0,
-            remove_byte: 0,
-            replace_byte: 0,
-            alter_byte: 0,
+            replace_letter: 0,
+            insert_byte: 1,
+            remove_byte: 1,
+            replace_byte: 10,
           },
           number_per_cycle: 1,
         },
@@ -192,7 +256,7 @@ export default {
       this.worker = new Worker("/worker/mutate_text.wk.umd.min.js")
       this.worker.onmessage = this.receive
       this.worker.postMessage(this.conf)
-      this.refreshInterval = setInterval(this.renderChart, 200)
+      this.refreshInterval = setInterval(this.renderChart, 1000)
     },
 
     renderChart() {
@@ -229,7 +293,7 @@ export default {
       if (p === null || p === undefined) {
         return ""
       } else {
-        return p.toFixed(2)
+        return Math.round(p * 100).toFixed(0) + "%"
       }
     },
   },
@@ -258,6 +322,7 @@ export default {
 
     td.phenotype {
       white-space: nowrap;
+      line-height: 1em;
     }
   }
 
