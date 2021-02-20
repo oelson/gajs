@@ -39,7 +39,7 @@
         </select>
       </label>
       <label>
-        Initial population
+        Init
         <input
           type="number"
           min="1"
@@ -50,6 +50,21 @@
           <option value="random_letter">Random letter</option>
           <option value="random_text">Random text</option>
         </select>
+      </label>
+      <label>
+        Stop rank
+        <input type="number" min="1" v-model.number="conf.stop.rank" size="4" />
+      </label>
+      <label>
+        Stop survival
+        <input
+          type="number"
+          min="0"
+          max="1"
+          v-model.number="conf.stop.survival_p"
+          size="4"
+          step="0.01"
+        />
       </label>
     </div>
 
