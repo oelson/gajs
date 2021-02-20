@@ -39,13 +39,16 @@
         </select>
       </label>
       <label>
-        Init
+        Init size
         <input
           type="number"
           min="1"
           v-model.number="conf.start.length"
           size="4"
         />
+      </label>
+      <label>
+        Init type
         <select v-model="conf.start.function">
           <option value="random_letter">Random letter</option>
           <option value="random_text">Random text</option>
