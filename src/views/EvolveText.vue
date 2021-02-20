@@ -24,74 +24,92 @@
           :readonly="worker !== undefined"
         />
       </label>
+      <label>
+        Evaluation
+        <select v-model="conf.selection.evaluation">
+          <option value="text_distance">Text</option>
+          <option value="bytes_distance">Byte</option>
+        </select>
+      </label>
     </div>
-    <h1>Mutations</h1>
-    <table class="conf-group">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Insert</th>
-          <th>Remove</th>
-          <th>Change</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>Letter</th>
-          <td>
-            <input
-              type="number"
-              min="0"
-              v-model.number="conf.mutations.functions.insert_letter"
-              size="2"
-            />
-          </td>
-          <td>
-            <input
-              type="number"
-              min="0"
-              v-model.number="conf.mutations.functions.remove_letter"
-              size="2"
-            />
-          </td>
-          <td>
-            <input
-              type="number"
-              min="0"
-              v-model.number="conf.mutations.functions.replace_letter"
-              size="2"
-            />
-          </td>
-        </tr>
-        <tr>
-          <th>Byte</th>
-          <td>
-            <input
-              type="number"
-              min="0"
-              v-model.number="conf.mutations.functions.insert_byte"
-              size="2"
-            />
-          </td>
-          <td>
-            <input
-              type="number"
-              min="0"
-              v-model.number="conf.mutations.functions.remove_byte"
-              size="2"
-            />
-          </td>
-          <td>
-            <input
-              type="number"
-              min="0"
-              v-model.number="conf.mutations.functions.replace_byte"
-              size="2"
-            />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+
+    <div class="conf-group">
+      <label>
+        Mutations per cycle
+        <input
+          type="number"
+          min="0"
+          v-model.number="conf.mutations.number_per_cycle"
+          size="2"
+        />
+      </label>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Insert</th>
+            <th>Remove</th>
+            <th>Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Letter</th>
+            <td>
+              <input
+                type="number"
+                min="0"
+                v-model.number="conf.mutations.functions.insert_letter"
+                size="2"
+              />
+            </td>
+            <td>
+              <input
+                type="number"
+                min="0"
+                v-model.number="conf.mutations.functions.remove_letter"
+                size="2"
+              />
+            </td>
+            <td>
+              <input
+                type="number"
+                min="0"
+                v-model.number="conf.mutations.functions.replace_letter"
+                size="2"
+              />
+            </td>
+          </tr>
+          <tr>
+            <th>Byte</th>
+            <td>
+              <input
+                type="number"
+                min="0"
+                v-model.number="conf.mutations.functions.insert_byte"
+                size="2"
+              />
+            </td>
+            <td>
+              <input
+                type="number"
+                min="0"
+                v-model.number="conf.mutations.functions.remove_byte"
+                size="2"
+              />
+            </td>
+            <td>
+              <input
+                type="number"
+                min="0"
+                v-model.number="conf.mutations.functions.replace_byte"
+                size="2"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <button ref="go" @click="toggle">
       <template v-if="worker !== undefined">Stop</template>
@@ -103,8 +121,7 @@
         <tr>
           <th>Rang</th>
           <th>Population</th>
-          <th>Meilleure p.</th>
-          <th>Pire p.</th>
+          <th>Survie</th>
           <th class="phenotype">Meilleur être</th>
         </tr>
       </thead>
@@ -113,10 +130,11 @@
           <td>{{ latest.rank }}</td>
           <td>{{ latest.population_length }}</td>
           <td class="probability">
-            {{ formatSurvivalP(latest.best.survival_p) }}
-          </td>
-          <td class="probability">
-            {{ formatSurvivalP(latest.worst.survival_p) }}
+            <template v-if="latest.best !== ''">
+              {{ formatSurvivalP(latest.best.survival_p) }}-{{
+                formatSurvivalP(latest.worst.survival_p)
+              }}
+            </template>
           </td>
           <td class="phenotype">{{ latest.best.phenotype }}</td>
         </tr>

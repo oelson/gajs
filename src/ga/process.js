@@ -6,7 +6,7 @@ function* generate({
   mutate,
   select,
   success,
-  failure
+  failure,
 }) {
   for (
     let rank = 1;

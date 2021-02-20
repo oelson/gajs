@@ -9,7 +9,7 @@
   "author": "Houillon Nelson",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "serve:worker": "vue-cli-service build --watch --dest public/worker --target lib --formats umd-min --name mutate_text.wk src/mutate_text.wk.js",
+    "serve:wk": "vue-cli-service build --watch --dest public/worker --target lib --formats umd-min --name mutate_text.wk src/mutate_text.wk.js",
     "build": "vue-cli-service build --dest public/worker --target lib --formats umd-min --name mutate_text.wk src/mutate_text.wk.js && vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"

@@ -7,7 +7,7 @@ function integer_to_base(int, base, length) {
 }
 
 function binary_string(bytes) {
-  return bytes.map(b => integer_to_base(b, 2, 8)).join("")
+  return bytes.map((b) => integer_to_base(b, 2, 8)).join("")
 }
 
 // https://stackoverflow.com/questions/34309988/byte-array-to-hex-string-conversion-in-javascript
@@ -45,5 +45,5 @@ module.exports = {
   integer_to_base,
   binary_string,
   byte_string,
-  relative_fixed
+  relative_fixed,
 }

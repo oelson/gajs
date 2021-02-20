@@ -1,7 +1,6 @@
 const { byte_string } = require("./presentation")
 const { distance: levenshtein } = require("fastest-levenshtein")
 const {
-  flip_random_bit_in_random_byte,
   replace_random_byte,
   insert_random_byte,
   remove_random_byte,
@@ -91,9 +90,6 @@ function mutate_text(conf) {
       replace_byte(being) {
         replace_random_byte(being.genotype)
       },
-      alter_byte(being) {
-        flip_random_bit_in_random_byte(being.genotype)
-      },
     },
     evaluation: {
       text_distance(being) {
@@ -103,11 +99,13 @@ function mutate_text(conf) {
       },
       bytes_distance(being) {
         // workaround...
-        const being_genotype_string = being.genotype_byte_string
-        const target_genotype_string = target_b.genotype_byte_string
-        const score = levenshtein(being_genotype_string, target_genotype_string)
-        const death_probability = score / target_genotype_string.length
-        return 1 - death_probability
+        const score = levenshtein(
+          being.genotype_byte_string,
+          target_b.genotype_byte_string
+        )
+        const death_probability = score / target_b.genotype_byte_string.length
+        const survival_probability = 1 - death_probability
+        return survival_probability
       },
     },
     selection: {
@@ -160,17 +158,17 @@ function mutate_text(conf) {
     return rank > conf.stop.rank
   }
 
-  function label(being, ancestors) {
-    being.survival_p = survival_p_fn(being)
-    being.ancestors = ancestors
+  function label(being) {
+    // beware order is important
     being.genotype_byte_string = byte_string(being.genotype)
+    being.survival_p = survival_p_fn(being)
   }
 
   function initial_population() {
     const population = []
     for (let i = 0; i < conf.start.length; i++) {
       const being = initial_population_fn()
-      label(being, [])
+      label(being)
       population.push(being)
     }
     return population
@@ -181,12 +179,14 @@ function mutate_text(conf) {
     for (const parent of population) {
       for (let i = 0; i < conf.reproduction.rate; i++) {
         const child = reproduction_fn(parent)
-        label(child, [parent])
+        label(child)
         offspring.push(child)
       }
     }
     return offspring
   }
+
+  label(target_b)
 
   const generations = generate({
     population: initial_population(),

@@ -48,5 +48,5 @@ module.exports = {
   str_distance,
   vector_distance,
   integer_binary_distance,
-  byte_vector_distance
+  byte_vector_distance,
 }
