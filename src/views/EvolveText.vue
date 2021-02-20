@@ -31,6 +31,19 @@
           <option value="bytes_distance">Byte</option>
         </select>
       </label>
+      <label>
+        Initial population
+        <input
+          type="number"
+          min="1"
+          v-model.number="conf.start.length"
+          size="4"
+        />
+        <select v-model="conf.start.function">
+          <option value="random_letter">Random letter</option>
+          <option value="random_text">Random text</option>
+        </select>
+      </label>
     </div>
 
     <div class="conf-group">
@@ -158,8 +171,8 @@ export default {
           text: "les zebres sont cool",
         },
         start: {
-          length: 100,
-          function: "random_fixed_length",
+          length: 30,
+          function: "random_text",
         },
         reproduction: {
           rate: 10,
@@ -176,7 +189,7 @@ export default {
             replace_letter: 0,
             insert_byte: 1,
             remove_byte: 1,
-            replace_byte: 10,
+            replace_byte: 3,
           },
           number_per_cycle: 1,
         },

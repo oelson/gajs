@@ -108,16 +108,21 @@ function mutate_text(conf) {
         return survival_probability
       },
     },
-    selection: {
-      keep_population_stable(population) {
-        const competition = sortBy(population, [(b) => b.survival_p])
-        const percentile = 1 - 1 / conf.reproduction.rate
-        const threshold = parseInt(population.length * percentile)
-        return competition.slice(threshold)
-      },
-    },
     population: {
-      random_fixed_length() {
+      random_letter() {
+        let chars = []
+
+        const randomIndex = Math.floor(
+          Math.random() * conf.target.alphabet.length
+        )
+        const randomChar = conf.target.alphabet.charAt(randomIndex)
+        chars.push(randomChar)
+
+        const phenotype = chars.join("")
+        const genotype = encode_utf8(phenotype)
+        return utf8_being(genotype)
+      },
+      random_text() {
         let chars = []
         for (var i = 0; i < target_b.phenotype.length; i++) {
           const randomIndex = Math.floor(
@@ -147,7 +152,6 @@ function mutate_text(conf) {
   const initial_population_fn = choices.population[conf.start.function]
   const target_b = utf8_being(encode_utf8(conf.target.text))
   const survival_p_fn = choices.evaluation[conf.selection.evaluation]
-  const select_fn = choices.selection[conf.selection.reduction]
   const reproduction_fn = choices.reproduction[conf.reproduction.function]
 
   function success({ population }) {
@@ -186,13 +190,20 @@ function mutate_text(conf) {
     return offspring
   }
 
+  function keep_population_stable(population) {
+    const competition = sortBy(population, [(b) => b.survival_p])
+    const percentile = 1 - 1 / conf.reproduction.rate
+    const threshold = parseInt(population.length * percentile)
+    return competition.slice(threshold)
+  }
+
   label(target_b)
 
   const generations = generate({
     population: initial_population(),
     mutate: (p) => p.forEach(hazard_fn),
     reproduce: reproduce,
-    select: select_fn,
+    select: keep_population_stable,
     success,
     failure,
   })
