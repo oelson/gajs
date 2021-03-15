@@ -80,7 +80,7 @@ export default {
   },
   data() {
     return {
-      text: "cadàvre ß 會",
+      text: "Methinks it is like a weasel.",
     }
   },
 }
