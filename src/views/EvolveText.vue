@@ -38,7 +38,18 @@
       différents, mais plus on sélectionne un trait précis, plus on a besoin de
       générations proprement sélectionnées : on affine à la fin.
     </p>
-    <p><b>Oscillation</b> ?</p>
+    <p>
+      <b>Oscillation</b> Constat 1 : à chaque génération tous les "mauvais" ne
+      sont pas retirés car la pression sélective n'est pas si forte. On retire
+      les 1/n les pires (où n est le taux de fécondité). Si les bons sont
+      majoritaires, on retire donc des bons avec les mauvais. Si au contraire
+      les mauvais sont majoritaires, alors des mauvais passent à la génération
+      suivante.
+      <u
+        >Or tout le problème de code est la surrabondance des mauvais devant les
+        bons</u
+      >
+    </p>
     <div class="conf-group">
       <label>
         Alphabet
@@ -193,7 +204,7 @@
       <template v-else>Go</template>
     </button>
 
-    <table class="summary">
+    <table class="summary" v-if="latest !== undefined">
       <thead>
         <tr>
           <th>Rang</th>
@@ -248,28 +259,23 @@ export default {
         },
         mutations: {
           functions: {
-            insert_letter: 1,
-            remove_letter: 1,
-            replace_letter: 0,
-            insert_byte: 1,
-            remove_byte: 1,
-            replace_byte: 3,
+            insert_letter: 0,
+            remove_letter: 0,
+            replace_letter: 1,
+            insert_byte: 0,
+            remove_byte: 0,
+            replace_byte: 0,
           },
           number_per_cycle: 1,
         },
         stop: {
-          rank: 10000,
-          survival_p: 0.97,
+          rank: 100,
+          survival_p: 1.0,
         },
       },
       worker: undefined,
       refreshInterval: undefined,
-      latest: {
-        rank: 0,
-        population_length: 0,
-        best: "",
-        worst: "",
-      },
+      generations: [],
       chartBuffer: [],
       chart: undefined,
       chartConfig: {
@@ -330,6 +336,12 @@ export default {
     }
   },
 
+  computed: {
+    latest() {
+      return this.generations[this.generations.length - 1]
+    },
+  },
+
   methods: {
     toggle() {
       if (this.worker !== undefined) {
@@ -342,12 +354,7 @@ export default {
     run() {
       this.chartConfig.data.datasets[0].data = []
       this.chartBuffer = []
-      this.latest = {
-        rank: 0,
-        population_length: 0,
-        best: "",
-        worst: "",
-      }
+      this.generations = []
       this.worker = new Worker("/worker/mutate_text.wk.umd.min.js")
       this.worker.onmessage = this.receive
       this.worker.postMessage(this.conf)
@@ -363,12 +370,13 @@ export default {
     },
 
     receive(e) {
-      const latest = e.data
-      if (latest === null) {
+      const generation = e.data
+      if (generation === null) {
         this.stop()
       } else {
-        this.latest = latest
-        this.chartBuffer.push({ x: latest.rank, y: latest.best.survival_p })
+        this.generations.push(generation)
+        const point = { x: generation.rank, y: generation.best.survival_p }
+        this.chartBuffer.push(point)
       }
     },
 
@@ -422,8 +430,8 @@ export default {
   }
 
   canvas {
-    max-width: 600px;
-    max-height: 400px;
+    max-width: 1200px;
+    max-height: 800px;
   }
 }
 </style>
