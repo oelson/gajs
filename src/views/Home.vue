@@ -1,5 +1,14 @@
 <template>
   <div class="home">
+    Si on mute un bit de poids fort on obtient une erreur car l'octet suivant ne
+    commence pas par 10. Les deux doivent donc être remplacés par �.
+    Pour éviter cela il faudrait que l'octet suivant commence par 10. Mais si tel était le cas
+    il serait lui-même invalide à partir de sa position, car non précédé d'un octet d'initiation.
+    La robustesse du code UTF-8 tient dans son caractère auto-synchronisant : une erreur ne peut pas
+    se propager indéfiniment, elle est "confinée" à une portion de la chaîne. De plus on sait toujours
+    exactement quoi faire quand on rencontre une erreur.
+    <br />
+
     <input v-model="text" />
     <div class="letter">
       <table>
@@ -80,7 +89,7 @@ export default {
   },
   data() {
     return {
-      text: "Methinks it is like a weasel.",
+      text: "Méthinks ît is like a wèàsel.",
     }
   },
 }

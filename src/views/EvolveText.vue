@@ -1,5 +1,44 @@
 <template>
   <div class="evolve">
+    <p>
+      <b>Thèse</b> L'évolution du code est d'autant moins facile que la
+      complexité du code augmente. Les mutations individuelles ne peuvent pas
+      produire de séquences complexes de code, tandis la sélection ne peut
+      qu'éliminer les codes en évolution mais non fonctionnels ou
+      sous-fonctionnels. L'accumulation de mutations neutres, soudainement
+      basculées dans le domaine fonctionnel par chance, ne tient pas la route
+      car la complexité du code rend l'apparition de ces séquences impossible
+      statistiquement. Dit autrement, l'activité de programmation requiert de
+      l'intelligence dans la capacité à percevoir à l'avance le résultat
+      escompté et à produire la séquence de code fonctionnelle d'un coup : on ne
+      programme pas par erreurs et essais au sein d'une masse de code non
+      fonctionnelle. Et même dans le scénario d'un code préexistant et
+      fonctionnel, la complexité du langage et du code rendent impossible toute
+      amélioration substentielle par des moyens progressifs. Le code fonctionnel
+      est comme placé sur un îlot entouré par une mer de mutations délètres,
+      c'est la nature fragile du code. La distance de Hamming entre deux codes
+      fonctionnels de fonctionnalité similaire est toujours trop grande, dans le
+      monde des programmes réels, pour envisager un chemin évolutif de l'un à
+      l'autre. Car contrairement à l'activité de programmation, l'évolution
+      requiert strictement que tout chainon dans la filiation soit fonctionnel
+      et au moins aussi bon que son prédécesseur.
+    </p>
+    <p>
+      <b>Explication de la courbe de base en logarithme</b>
+      La probabilité de se rapprocher d'une cible absolue est forte au début car
+      toutes les positions de la chaînent peuvent contribuer à l'amélioration.
+      Mais quand tous les caractères sauf un sont alignés, la probabilité que ce
+      seul caractère passe d'un mauvais au bon est 1/a où a est la taille de
+      l'alphabet. La formule générale donnant la probabilité de production d'un
+      individu amélioré d'un seul caractère est n/a avec n la taille de la
+      chaîne. C'est dans le cas où l'on remplace des caractères et non des bits.
+      Ce scénario d'un début facile et d'une fin pénible se rencontre aussi dans
+      le monde de l'élevage : il est facile de croiser certaines espèces de
+      crevettes très différentes pour produire des individus radicalement
+      différents, mais plus on sélectionne un trait précis, plus on a besoin de
+      générations proprement sélectionnées : on affine à la fin.
+    </p>
+    <p><b>Oscillation</b> ?</p>
     <div class="conf-group">
       <label>
         Alphabet
