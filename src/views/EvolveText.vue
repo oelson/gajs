@@ -1,5 +1,6 @@
 <template>
   <div class="evolve">
+    <!--
     <p>
       <b>Thèse</b> L'évolution du code est d'autant moins facile que la
       complexité du code augmente. Les mutations individuelles ne peuvent pas
@@ -50,6 +51,7 @@
         bons</u
       >
     </p>
+    -->
     <div class="conf-group">
       <label>
         Alphabet
@@ -82,11 +84,21 @@
         </select>
       </label>
       <label>
-        Reproduction
+        Reproduction mode
         <select v-model="conf.reproduction.function">
           <option value="clone">Clone</option>
           <option value="couple">Couple</option>
         </select>
+      </label>
+      <label>
+        Reproduction rate
+        <input
+          type="number"
+          min="1"
+          max="100"
+          size="3"
+          v-model="conf.reproduction.rate"
+        />
       </label>
       <label>
         Init size
@@ -199,6 +211,28 @@
       </table>
     </div>
 
+    <br />
+
+    <div class="info">
+      <b>Stabilité de la population :</b>
+      à chaque génération la population passe de {{ conf.start.length }} à
+      {{ conf.start.length * conf.reproduction.rate }} individus (x
+      {{ conf.reproduction.rate }}),<br />
+      et les
+      {{
+        (
+          (1 - 1 / conf.reproduction.rate) *
+          conf.start.length *
+          conf.reproduction.rate
+        ).toFixed(0)
+      }}
+      individus les moins aptes (soit
+      {{ formatSurvivalP(1 - 1 / conf.reproduction.rate) }} de la population)
+      sont éliminés pour retomber à {{ conf.start.length }}.<br />
+    </div>
+
+    <br />
+
     <button ref="go" @click="toggle">
       <template v-if="worker !== undefined">Stop</template>
       <template v-else>Go</template>
@@ -242,8 +276,9 @@ export default {
     return {
       conf: {
         target: {
-          alphabet: "abcdefghijklmnopqrstuvwxyz ",
-          text: "les zebres sont cool",
+          alphabet: "abcdefghijklmnopqrstuvwxyz,.' èëùéïêçüîôœàÿâûæ",
+          text:
+            "dès noël, où un zéphyr haï me vêt de glaçons würmiens, je dîne d’exquis rôtis de bœuf au kir, à l’aÿ d’âge mûr, ecætera.",
         },
         start: {
           length: 30,
@@ -269,8 +304,8 @@ export default {
           number_per_cycle: 1,
         },
         stop: {
-          rank: 100,
-          survival_p: 1.0,
+          rank: 10000,
+          survival_p: 0.95,
         },
       },
       worker: undefined,
