@@ -1,0 +1,124 @@
+== Domaines ==
+Domaine flou = je peux m'approcher d'une bonne solution par plusieurs chemins
+Domaine strict = je ne peux m'approcher que par un chemin
+
+L'évolution des textes est un domaine strict, car on doit avoir tous les caractères dans l'ordre, strictement.
+Conjecture : un domaine strict engendre une courge logarithmique par définition car plus on s'approche, plus c'est difficile de s'approcher.
+En effet il faut à la fois changer le dernier caractère erroné, mais également conserver intact les N-1 qui sont corrects.
+Statistiquement on doit donc sacrifier une grosse partie de la population, qui subit uniformément les mutations, pour retirer les mutants
+qui perdent un bon caractère. Parmi le reste, il faut ensuite avoir suffisament d'individus restants pour que la probabilité de la bonne mutation
+sur le bon caractère arrive.
+Donc plus on sacrifie d'individus à chaque génération, plus on s'approchera (vite ?) du résultat.
+Ainsi le % de perte à chaque génération fait converger la courbe de survie vers l'asymtote de valeur y= le %
+On remarque qu'entre 50% et 84% la relation suit, mais au delà on piétinne, même en sacrifiant 97% de chaque génération.
+
+== TODO ==
+- pouvoir appuyer sur "pause" et le worker s'arrête, on affiche tous les individus N-1 et N avec lien de parenté et un diff parent/enfant
+
+== Thèse ==
+L'évolution du code est d'autant moins facile que la
+complexité du code augmente. Les mutations individuelles ne peuvent pas
+produire de séquences complexes de code, tandis la sélection ne peut
+qu'éliminer les codes en évolution mais non fonctionnels ou
+sous-fonctionnels. L'accumulation de mutations neutres, soudainement
+basculées dans le domaine fonctionnel par chance, ne tient pas la route
+car la complexité du code rend l'apparition de ces séquences impossible
+statistiquement. Dit autrement, l'activité de programmation requiert de
+l'intelligence dans la capacité à percevoir à l'avance le résultat
+escompté et à produire la séquence de code fonctionnelle d'un coup : on ne
+programme pas par erreurs et essais au sein d'une masse de code non
+fonctionnelle. Et même dans le scénario d'un code préexistant et
+fonctionnel, la complexité du langage et du code rendent impossible toute
+amélioration substentielle par des moyens progressifs. Le code fonctionnel
+est comme placé sur un îlot entouré par une mer de mutations délètres,
+c'est la nature fragile du code. La distance de Hamming entre deux codes
+fonctionnels de fonctionnalité similaire est toujours trop grande, dans le
+monde des programmes réels, pour envisager un chemin évolutif de l'un à
+l'autre. Car contrairement à l'activité de programmation, l'évolution
+requiert strictement que tout chainon dans la filiation soit fonctionnel
+et au moins aussi bon que son prédécesseur.
+
+== Courbe logarithme ==
+La probabilité de se rapprocher d'une cible absolue est forte au début car
+toutes les positions de la chaînent peuvent contribuer à l'amélioration.
+Mais quand tous les caractères sauf un sont alignés, la probabilité que ce
+seul caractère passe d'un mauvais au bon est 1/a où a est la taille de
+l'alphabet. La formule générale donnant la probabilité de production d'un
+individu amélioré d'un seul caractère est n/a avec n la taille de la
+chaîne. C'est dans le cas où l'on remplace des caractères et non des bits.
+Ce scénario d'un début facile et d'une fin pénible se rencontre aussi dans
+le monde de l'élevage : il est facile de croiser certaines espèces de
+crevettes très différentes pour produire des individus radicalement
+différents, mais plus on sélectionne un trait précis, plus on a besoin de
+générations proprement sélectionnées : on affine à la fin.
+
+Pourquoi la courbe descend ? À cause des mutations délétaires, qui sont
+majoritaires dans ce scénario : il est plus facile de défaire un caractère
+que de le faire, donc en moyenne la courbe est tirée vers le bas par 
+l'entropie génétique. La sélection artificielle tire la courbe vers le haut
+non pas en créant de bonne mutations mais en supprimant massivement les
+mauvaises. La courbe résultante est donc un rapport de force entre une 
+dynamique vers le haut et vers le bas.
+
+Ainsi la phase stationnaire s'explique par le fait que lorsqu'il reste peu
+de caractères non optimaux, ils sont difficiles à faire basculer. En revanche
+l'entropie génétique continue d'opérer sur tous les autres et donc le "poids"
+de l'ensemble augmente, car il devient plus probable qu'une erreur apparaisse
+à la place d'une bonne réponse, qu'une bonne réponse disparaisse et cède la
+place à une erreur.
+
+On converge systématiquement vers un fitness de valeur = % de sélection.
+Exemple 1 : si à chaque génération on multiplie par 10 la population, en vue
+d'une stabilité on devra par la suite éliminer 90% de la population. Si la
+population est suffisament nombreuse (en pratique entre 100 et 300 individus
+suffisent) alors le fitness convergera vers 0.9.
+Exemple 2 : en parant de 150 individus, à chaque génération on en obtient 5950
+c'est-à-dire 33 fois plus ; on devra en supprimer 4800 pour revenir à 150, soit
+97%. Le fitness convergera alors vers 97%.
+
+Point important : on a donc une méthodologie pour atteindre un fitness désiré.
+En pratique cela revient à calibrer "la fusée" de la courbe logarithmique, pour
+que l'accélération compense la gravité : on vise le début de l'asymptote, car si
+on n'a pas assez d'énergie on sera bloqué sur un plateau à jamais. En ayant
+bien "visé" on arrive en quelque centaines de générations à obtenir notre
+individu évolué.
+
+Pour résumer on forge une espèce "évoluée" au prix exact du pourcentage de mort
+qu'on inflige à chaque génération. Plus on tue les inaptes, plus l'évolution
+converge. C'est une machine à gâcher.
+
+== Pourquoi ça descend à certaines générations ? ==
+Car tous les mauvais ne sont pas ôtés. Si par hasard une génération à quasiment
+tous les individus dévalués, les quelques uns intacts pour améliorés seront 
+conservés en vie avec d'autres qui fatalement seront inférieurs. Supposons que 95%
+soient faits mauvais et qu'on supprime 90% des pires : il reste donc 5% de bons et
+5% de mauvais. À la génération suivantes, on a 50%-50%, ainsi l'erreur est amplifiée.
+Cela arrive statistiquement moins souvent, mais cela arrive.
+
+== Le rôle de la quantité de mutations ==
+Plus les mutations sont nombreuses, plus le "poids" de la courbe est grand
+car l'entropie devient efficace à supprimer toutes les informations positives.
+
+On a donc deux paramètres antagonistes : le taux de fécondité, par lequel le
+grand nombre d'individus devient une sorte de "tampon" pour l'entropie et qui
+maintient la courbe en haut ; et le taux de mutations, qui tire vers le bas.
+
+Mais le taux de mutation ne contrebalance pas très fortement l'efficacité de
+la sélection. On constate un poids moyen d'environ 5% à 20 mutations par cycle.
+
+Et bien sûr, le nombre de mutations est lié à la taille de la chaîne à faire
+évoluer; si on a autant de mutations que de caractères, la probabilité qu'on mute
+une mutation augmente et l'effet s'annule si les mutations se font en respect du
+code.
+
+En revanche si l'on mute le génome brutalement, sans égard au code, la courbe
+s'effondre ! Il y a une limite à ce que le code peut supporter !
+Même sans parler de catastrophe génétique, la courbe est tirée vers le bas de 10%
+pour un taux de mutation de 1/cycle ; de 30% pour 2/cycle; de 45% pour 3/cycle ;
+de 55% pour 4; de 60% pour 5. En moyenne : 5% par point de mutation par cycle.
+Plus on mute, plus les oscillations s'étalent, comme si la sélection avait du mal 
+à se défaire des erreurs du passé.
+
+Ainsi alors que UTF-8 est auto-synchronisant, et donc résilient aux erreurs de
+communication, on voit qu'au delà de 2 ou 3 mutations par cycle, l'évolution
+s'effondre.
