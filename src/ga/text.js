@@ -179,8 +179,10 @@ function mutate_text(conf) {
     return population.some((being) => being.survival_p >= conf.stop.survival_p)
   }
 
-  function failure({ rank }) {
-    return rank > conf.stop.rank
+  function failure({ rank, population }) {
+    return (
+      rank > conf.stop.rank || population.some((being) => being.survival_p <= 0)
+    )
   }
 
   function label(being) {
