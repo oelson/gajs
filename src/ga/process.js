@@ -21,7 +21,7 @@ function* generate({
   }
 }
 
-function hazard(mutation_index, mutation_names_and_weights, number_per_cycle) {
+function hazard(mutation_index, mutation_names_and_weights, rate) {
   const mutations = []
   const weights = []
 
@@ -32,7 +32,7 @@ function hazard(mutation_index, mutation_names_and_weights, number_per_cycle) {
   }
 
   return function(being) {
-    for (let i = 1; i <= number_per_cycle; i++) {
+    for (let i = 1; i <= rate; i++) {
       const mutate = select(mutations, weights)
       mutate(being)
     }

@@ -60,13 +60,17 @@ function utf8_being(genotype) {
 }
 
 function mutate_text(conf) {
+  const alphabet =
+    typeof conf.target.alphabet.length > 0
+      ? conf.target.alphabet
+      : [...new Set(conf.target.text.split(""))].join("")
   const choices = {
     mutation: {
       insert_letter(being) {
         const insertion_index = random.int(0, being.phenotype.length - 1)
-        const alphabet_index = random.int(0, conf.target.alphabet.length - 1)
+        const alphabet_index = random.int(0, alphabet.length - 1)
         const letters = being.phenotype.split("")
-        const new_letter = conf.target.alphabet[alphabet_index]
+        const new_letter = alphabet[alphabet_index]
         letters.splice(insertion_index, 0, new_letter)
         const new_phenotype = letters.join("")
         being.genotype = encode_utf8(new_phenotype)
@@ -80,9 +84,9 @@ function mutate_text(conf) {
       },
       replace_letter(being) {
         const replacement_index = random.int(0, being.phenotype.length - 1)
-        const alphabet_index = random.int(0, conf.target.alphabet.length - 1)
+        const alphabet_index = random.int(0, alphabet.length - 1)
         const letters = being.phenotype.split("")
-        const new_letter = conf.target.alphabet[alphabet_index]
+        const new_letter = alphabet[alphabet_index]
         letters[replacement_index] = new_letter
         const new_phenotype = letters.join("")
         being.genotype = encode_utf8(new_phenotype)
@@ -118,10 +122,8 @@ function mutate_text(conf) {
       random_letter() {
         let chars = []
 
-        const randomIndex = Math.floor(
-          Math.random() * conf.target.alphabet.length
-        )
-        const randomChar = conf.target.alphabet.charAt(randomIndex)
+        const randomIndex = Math.floor(Math.random() * alphabet.length)
+        const randomChar = alphabet.charAt(randomIndex)
         chars.push(randomChar)
 
         const phenotype = chars.join("")
@@ -131,10 +133,8 @@ function mutate_text(conf) {
       random_text() {
         let chars = []
         for (var i = 0; i < target_b.phenotype.length; i++) {
-          const randomIndex = Math.floor(
-            Math.random() * conf.target.alphabet.length
-          )
-          const randomChar = conf.target.alphabet.charAt(randomIndex)
+          const randomIndex = Math.floor(Math.random() * alphabet.length)
+          const randomChar = alphabet.charAt(randomIndex)
           chars.push(randomChar)
         }
         const phenotype = chars.join("")
@@ -168,7 +168,7 @@ function mutate_text(conf) {
   const hazard_fn = hazard(
     choices.mutation,
     conf.mutations.functions,
-    conf.mutations.number_per_cycle
+    conf.mutations.rate
   )
   const initial_population_fn = choices.population[conf.start.function]
   const target_b = utf8_being(encode_utf8(conf.target.text))

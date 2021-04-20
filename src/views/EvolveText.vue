@@ -1,9 +1,11 @@
 <template>
   <div class="evolve">
     <div class="conf-group">
+      <h1>Text</h1>
       <label>
         Alphabet
         <select v-model="conf.target.alphabet">
+          <option value="">from text</option>
           <option value="abcdefghijklmnopqrstuvwxyz ">[a-z ]</option>
           <option value="abcdefghijklmnopqrstuvwxyz0123456789 ">
             [a-z0-9 ]
@@ -15,31 +17,40 @@
           </option>
         </select>
       </label>
-
       <label>
-        Texte
+        Target
         <input
           type="text"
           v-model="conf.target.text"
           :readonly="worker !== undefined"
+          size="100"
         />
       </label>
+    </div>
+    <div class="conf-group">
+      <h1>Initialization</h1>
       <label>
-        Evaluation
-        <select v-model="conf.selection.evaluation">
-          <option value="text_distance">Text</option>
-          <option value="bytes_distance">Byte</option>
+        Size
+        <input
+          type="number"
+          min="1"
+          v-model.number="conf.start.length"
+          size="4"
+        />
+      </label>
+
+      <label>
+        Type
+        <select v-model="conf.start.function">
+          <option value="random_letter">Random letter</option>
+          <option value="random_text">Random text</option>
         </select>
       </label>
+    </div>
+    <div class="conf-group">
+      <h1>Reproduction</h1>
       <label>
-        Reproduction mode
-        <select v-model="conf.reproduction.function">
-          <option value="clone">Clone</option>
-          <option value="couple">Couple</option>
-        </select>
-      </label>
-      <label>
-        Reproduction rate
+        Rate
         <input
           type="number"
           min="1"
@@ -49,27 +60,21 @@
         />
       </label>
       <label>
-        Init size
-        <input
-          type="number"
-          min="1"
-          v-model.number="conf.start.length"
-          size="4"
-        />
-      </label>
-      <label>
-        Init type
-        <select v-model="conf.start.function">
-          <option value="random_letter">Random letter</option>
-          <option value="random_text">Random text</option>
+        Mode
+        <select v-model="conf.reproduction.function">
+          <option value="clone">Clone</option>
+          <option value="couple">Couple</option>
         </select>
       </label>
+    </div>
+    <div class="conf-group">
+      <h1>Stop</h1>
       <label>
-        Stop rank
+        Rank
         <input type="number" min="1" v-model.number="conf.stop.rank" size="4" />
       </label>
       <label>
-        Stop survival
+        Survival probability
         <input
           type="number"
           min="0"
@@ -80,18 +85,10 @@
         />
       </label>
     </div>
-
     <div class="conf-group">
-      <label>
-        Mutations per cycle
-        <input
-          type="number"
-          min="0"
-          v-model.number="conf.mutations.number_per_cycle"
-          size="2"
-        />
-      </label>
-      <table>
+      <h1>Mutation</h1>
+
+      <table class="mutation-distribution">
         <thead>
           <tr>
             <th></th>
@@ -157,30 +154,40 @@
           </tr>
         </tbody>
       </table>
+
+      <label>
+        Rate
+        <input
+          type="number"
+          min="0"
+          v-model.number="conf.mutations.rate"
+          size="2"
+        />
+      </label>
     </div>
-
-    <br />
-
+    <div class="conf-group">
+      <h1>Selection</h1>
+      <label>
+        Evaluation
+        <select v-model="conf.selection.evaluation">
+          <option value="text_distance">Text</option>
+          <option value="bytes_distance">Byte</option>
+        </select>
+      </label>
+    </div>
     <div class="info">
-      <b>Stabilité de la population :</b>
-      à chaque génération la population passe de {{ conf.start.length }} à
-      {{ conf.start.length * conf.reproduction.rate }} individus (x
-      {{ conf.reproduction.rate }}),<br />
-      et les
-      {{
-        (
-          (1 - 1 / conf.reproduction.rate) *
-          conf.start.length *
-          conf.reproduction.rate
-        ).toFixed(0)
+      <h1>Population stability</h1>
+
+      “At each generation the population grows from {{ conf.start.length }} to
+      {{ populationLengthAfterReproduction }} beings ({{
+        conf.reproduction.rate
       }}
-      individus les moins aptes (soit
-      {{ formatSurvivalP(1 - 1 / conf.reproduction.rate) }} de la population)
-      sont éliminés pour retomber à {{ conf.start.length }}.<br />
+      times more), and the
+      {{ numberOfInaptBeings.toFixed(0) }} less apt beings (or
+      {{ formatPercentage(percentageOfInaptBeings) }} of the population) are
+      deducted to fall back to {{ conf.start.length }}.”
     </div>
-
-    <br />
-
+    <hr />
     <button ref="go" @click="toggle">
       <template v-if="worker !== undefined">Stop</template>
       <template v-else>Go</template>
@@ -201,8 +208,8 @@
           <td>{{ latest.population_length }}</td>
           <td class="probability">
             <template v-if="latest.best !== ''">
-              {{ formatSurvivalP(latest.best.survival_p) }}-{{
-                formatSurvivalP(latest.worst.survival_p)
+              {{ formatPercentage(latest.best.survival_p) }}-{{
+                formatPercentage(latest.worst.survival_p)
               }}
             </template>
           </td>
@@ -224,16 +231,16 @@ export default {
     return {
       conf: {
         target: {
-          alphabet: "abcdefghijklmnopqrstuvwxyz,.' èëùéïêçüîôœàÿâûæ",
+          alphabet: "",
           text:
-            "dès noël, où un zéphyr haï me vêt de glaçons würmiens, je dîne d’exquis rôtis de bœuf au kir, à l’aÿ d’âge mûr, ecætera.",
+            "Voix ambiguë d'un cœur qui, au zéphyr, préfère les jattes de kiwis.",
         },
         start: {
-          length: 30,
-          function: "random_text",
+          length: 150,
+          function: "random_letter",
         },
         reproduction: {
-          rate: 10,
+          rate: 30,
           function: "clone",
         },
         selection: {
@@ -242,18 +249,18 @@ export default {
         },
         mutations: {
           functions: {
-            insert_letter: 0,
-            remove_letter: 0,
+            insert_letter: 1,
+            remove_letter: 1,
             replace_letter: 1,
             insert_byte: 0,
             remove_byte: 0,
             replace_byte: 0,
           },
-          number_per_cycle: 1,
+          rate: 4,
         },
         stop: {
-          rank: 10000,
-          survival_p: 0.95,
+          rank: 1000,
+          survival_p: 1.0,
         },
       },
       worker: undefined,
@@ -296,7 +303,7 @@ export default {
             axis: "x",
             callbacks: {
               beforeTitle: () => "Rank: ",
-              label: (tooltipItem) => this.formatSurvivalP(tooltipItem.yLabel),
+              label: (tooltipItem) => this.formatPercentage(tooltipItem.yLabel),
             },
           },
           scales: {
@@ -322,6 +329,19 @@ export default {
   computed: {
     latest() {
       return this.generations[this.generations.length - 1]
+    },
+    populationLengthAfterReproduction() {
+      return this.conf.start.length * this.conf.reproduction.rate
+    },
+    numberOfInaptBeings() {
+      return (
+        (1 - 1 / this.conf.reproduction.rate) *
+        this.conf.start.length *
+        this.conf.reproduction.rate
+      )
+    },
+    percentageOfInaptBeings() {
+      return 1 - 1 / this.conf.reproduction.rate
     },
   },
 
@@ -375,7 +395,7 @@ export default {
       }
     },
 
-    formatSurvivalP(p) {
+    formatPercentage(p) {
       if (p === null || p === undefined) {
         return ""
       } else {
@@ -399,6 +419,16 @@ export default {
 
 <style lang="less" scoped>
 .evolve {
+  h1 {
+    font-size: 1.2em;
+  }
+
+  .mutation-distribution {
+    th {
+      font-weight: normal;
+    }
+  }
+
   .summary {
     font-family: monospace;
 
