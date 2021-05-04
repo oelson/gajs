@@ -69,14 +69,12 @@ function counts(iterable) {
   return map
 }
 
-function compare_unsorted(a, b) {
-  const a_counts = counts(a)
-  const b_counts = counts(b)
-  const all_letters = new Set([...a_counts.keys(), ...b_counts.keys()])
+function compare_sets(a, b) {
+  const all_letters = new Set([...a.keys(), ...b.keys()])
   let distance = 0
   for (const l of all_letters) {
-    let a_count = a_counts.get(l)
-    let b_count = b_counts.get(l)
+    let a_count = a.get(l)
+    let b_count = b.get(l)
     if (a_count === undefined) a_count = 0
     if (b_count === undefined) b_count = 0
     distance += Math.abs(a_count - b_count)
@@ -135,7 +133,10 @@ function mutate_text(conf) {
         return survival_probability
       },
       text_unsorted_distance(being) {
-        const distance = compare_unsorted(being.phenotype, target_b.phenotype)
+        const distance = compare_sets(
+          being.phenotype_counts,
+          target_b.phenotype_counts
+        )
         const max = Math.max(being.phenotype.length, target_b.phenotype.length)
         const death_probability = distance / max
         const survival_probability = 1 - death_probability
@@ -222,6 +223,7 @@ function mutate_text(conf) {
   function label(being) {
     // beware order is important
     being.genotype_byte_string = byte_string(being.genotype)
+    being.phenotype_counts = counts(being.phenotype)
     being.survival_p = survival_p_fn(being)
   }
 
