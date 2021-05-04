@@ -122,3 +122,39 @@ Plus on mute, plus les oscillations s'étalent, comme si la sélection avait du 
 Ainsi alors que UTF-8 est auto-synchronisant, et donc résilient aux erreurs de
 communication, on voit qu'au delà de 2 ou 3 mutations par cycle, l'évolution
 s'effondre.
+
+== Pourquoi y a-t-il des phases descendantes ? ==
+
+Une phase régressive est paradoxale car à chaque génération a a conservé les
+meilleurs. Si sur 40 générations successives, ne conserver que les meilleurs
+aboutit au final à une dégradation de l'adaptivité, cela veut dire que même
+parmi les meilleurs se cachait quelque chose de mauvais.
+
+Mystère difficile à expliquer ... la sélection doit alors se "purger" de ses
+mauvais éléments, mais elle ne peut pas les juger mauvais dans l'absolu, seulement
+mauvais relativent aux autres qui sont aussi mauvais.
+
+== idée ==
+
+La sélection naturelle est meilleurs car ses contraintes sélectives sont multiples,
+donc les espèces s'adaptent simultanément à plusieurs contraintes.
+
+NON ! justement au contraire, le coût sélectif est déjà tellement elevé pour une 
+contrainte que la population ne peut pas supporter un poid supplémentaire. On ne
+peut sélectionner qu'un petit nombre de caractéristiques, et éviter des
+caractéristiques incompatibles ou incohérentes. En effet alors la fonction de
+sélection est finalement réduite à un (A | B) et elle ne "sait" plus qui privilégier,
+de A ou de B; et si A et B sont constradictoires (se rapprocher de A signifie s'éloigner
+de B et réciproquement) alors on ne peut pas converger.
+
+=> Il faut tester ce principe de la double sélection, par exemple en cherchant d'une
+   part à se rapprocher exactement d'un texte cible, d'autre part en cherchant à se
+   rapprocher d'une distribution de caractères (que des consonnes). Le résultat sera
+   forcément incohérent et la pression sélective demandée insupportable.
+   Soit on atteint l'impossible rapidement, en tuant tout le monde ; soit on "progresse"
+   vers l'impossible sans jamais l'atteindre.
+
+Dit autrement, on ne peut pas optimiser un lézard à aquérir des ailes et des os creux
+en "même temps", il faut le faire séquentiellement. Car des os creux sans ailes, c'est
+un désavantage; et des ailes sans os creux, de même. Complexité irréductible, au niveau
+même du processus sélectif : on doit avoir un ordre d'aquisition des phénotypes.
