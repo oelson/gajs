@@ -170,8 +170,9 @@
       <label>
         Evaluation
         <select v-model="conf.selection.evaluation">
-          <option value="text_distance">Text</option>
-          <option value="bytes_distance">Byte</option>
+          <option value="text_distance">Text distance</option>
+          <option value="bytes_distance">Byte distance</option>
+          <option value="text_unsorted_distance">Text unsorted distance</option>
         </select>
       </label>
     </div>
@@ -361,7 +362,7 @@ export default {
       this.worker = new Worker("/worker/mutate_text.wk.umd.min.js")
       this.worker.onmessage = this.receive
       this.worker.postMessage(this.conf)
-      this.refreshInterval = setInterval(this.renderChart, 1000)
+      this.refreshInterval = setInterval(this.renderChart, 500)
     },
 
     renderChart() {

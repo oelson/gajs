@@ -59,6 +59,31 @@ function utf8_being(genotype) {
   return { genotype, phenotype }
 }
 
+function counts(iterable) {
+  const map = new Map()
+  for (const element of iterable) {
+    let count = map.get(element)
+    if (count === undefined) count = 0
+    map.set(element, count + 1)
+  }
+  return map
+}
+
+function compare_unsorted(a, b) {
+  const a_counts = counts(a)
+  const b_counts = counts(b)
+  const all_letters = new Set([...a_counts.keys(), ...b_counts.keys()])
+  let distance = 0
+  for (const l of all_letters) {
+    let a_count = a_counts.get(l)
+    let b_count = b_counts.get(l)
+    if (a_count === undefined) a_count = 0
+    if (b_count === undefined) b_count = 0
+    distance += Math.abs(a_count - b_count)
+  }
+  return distance
+}
+
 function mutate_text(conf) {
   const alphabet =
     typeof conf.target.alphabet.length > 0
@@ -103,9 +128,18 @@ function mutate_text(conf) {
     },
     evaluation: {
       text_distance(being) {
-        const score = levenshtein(being.phenotype, target_b.phenotype)
-        const death_probability = score / target_b.phenotype.length
-        return 1 - death_probability
+        const distance = levenshtein(being.phenotype, target_b.phenotype)
+        const max = target_b.phenotype.length
+        const death_probability = distance / max
+        const survival_probability = 1 - death_probability
+        return survival_probability
+      },
+      text_unsorted_distance(being) {
+        const distance = compare_unsorted(being.phenotype, target_b.phenotype)
+        const max = Math.max(being.phenotype.length, target_b.phenotype.length)
+        const death_probability = distance / max
+        const survival_probability = 1 - death_probability
+        return survival_probability
       },
       bytes_distance(being) {
         // workaround...
